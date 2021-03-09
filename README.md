@@ -31,7 +31,7 @@ Change `tag` to to the version you need.
 docker pull woblerr/pgbackrest:tag
 ```
 
-* GitHub Packages:
+* GitHub Registry:
 
 ```bash
 docker pull ghcr.io/woblerr/pgbackrest:tag

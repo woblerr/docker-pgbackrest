@@ -3,7 +3,7 @@
 uid=$(id -u)
 
 if [ "${uid}" = "0" ]; then
-    # Custom time zoneuid
+    # Custom time zone
     if [ "${TZ}" != "Europe/Moscow" ]; then
         cp /usr/share/zoneinfo/${TZ} /etc/localtime
         echo "${TZ}" > /etc/timezone

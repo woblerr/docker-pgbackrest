@@ -48,7 +48,7 @@ jobs:
         DOCKERHUBPKG: ${{ secrets.DOCKEHUB_TOKEN }}
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
 
-    - name: Push pgbackrest images to Docker Hub with tag latest
+    - name: Push pgbackrest image to Docker Hub with tag 'latest'
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.pgbackrest_version == env.latest_version
       run: |
         docker login -u ${DOCKERHUBUSER} -p ${DOCKERHUBPKG}
@@ -75,7 +75,7 @@ jobs:
         GITHUBPKG: ${{ secrets.GUTHUB_CR_PAT }}
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
 
-    - name: Push pgbackrest images to GitHub Registry with tag latest
+    - name: Push pgbackrest image to GitHub Registry with tag 'latest'
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.pgbackrest_version == env.latest_version
       run: |
         echo ${GITHUBPKG} | docker login ghcr.io -u ${GITHUBUSER} --password-stdin
