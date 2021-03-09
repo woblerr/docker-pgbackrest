@@ -1,5 +1,7 @@
 # docker-pgbackrest
 
+[![Actions Status](https://github.com/woblerr/docker-pgbackrest/workflows/build/badge.svg)](https://github.com/woblerr/docker-pgbackrest/actions)
+
 [pgBackRest](https://pgbackrest.org/) inside Docker can be useful when you using [Dedicated Repository Host](https://pgbackrest.org/user-guide.html#repo-host) or inside CI/CD systems.
 
 Supported pgBackRest version tags:
@@ -29,7 +31,7 @@ Change `tag` to to the version you need.
 docker pull woblerr/pgbackrest:tag
 ```
 
-* Githab package:
+* GitHub Packages:
 
 ```bash
 docker pull ghcr.io/woblerr/pgbackrest:tag
