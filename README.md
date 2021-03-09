@@ -64,7 +64,7 @@ Host `USER:GROUP` - `pgbackrest:pgbackrest`, `UID:GID` - `1001:1001`. Backups ar
 docker run --rm \
     -e BACKREST_UID=1001 \
     -e BACKREST_GID=1001 \
-    -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa
+    -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     pgbackrest:2.32 \
@@ -77,7 +77,7 @@ And and the same time for old pgBackRest version:
 docker run --rm \
     -e BACKREST_UID=1001 \
     -e BACKREST_GID=1001 \
-    -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa
+    -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     pgbackrest:2.29 \
