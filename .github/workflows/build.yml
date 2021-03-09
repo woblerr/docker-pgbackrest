@@ -1,0 +1,90 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build_image:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pgbackrest_version: ["2.29", "2.30", "2.31", "2.32" ]
+    env: 
+      latest_version: "2.32"
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get repo tag
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      id: vars
+      run: |
+        echo ::set-output name=repo_tag::$(echo ${GITHUB_REF} | cut -d'/' -f3)
+
+    - name: Build pgbackrest images
+      run: |
+        docker build --rm -f Dockerfile --build-arg BACKREST_VERSION=${TAG} --build-arg REPO_BUILD_TAG=${REPO_TAG} -t pgbackrest:${TAG} .
+      env: 
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+
+    - name: Test pgbackrest images
+      run: |
+        docker run --rm pgbackrest:${TAG} pgbackrest version
+        docker inspect --format '{{ index .Config.Labels "org.label-schema.version"}}' pgbackrest:${TAG}
+      env: 
+        TAG: ${{ matrix.pgbackrest_version }}
+
+    - name: Push pgbackrest images to Docker Hub
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        docker login -u ${DOCKERHUBUSER} -p ${DOCKERHUBPKG}
+        docker tag pgbackrest:${TAG} docker.io/woblerr/pgbackrest:${TAG}
+        docker push docker.io/woblerr/pgbackrest:${TAG}
+        docker tag pgbackrest:${TAG} docker.io/woblerr/pgbackrest:${TAG}-${REPO_TAG}
+        docker push docker.io/woblerr/pgbackrest:${TAG}-${REPO_TAG}
+        docker logout
+      env:
+        TAG: ${{ matrix.pgbackrest_version }}
+        DOCKERHUBUSER: ${{ secrets.DOCKEHUB_USER }}
+        DOCKERHUBPKG: ${{ secrets.DOCKEHUB_TOKEN }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+
+    - name: Push pgbackrest images to Docker Hub with tag latest
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.pgbackrest_version == env.latest_version
+      run: |
+        docker login -u ${DOCKERHUBUSER} -p ${DOCKERHUBPKG}
+        docker tag pgbackrest:${TAG} docker.io/woblerr/pgbackrest:latest
+        docker push docker.io/woblerr/pgbackrest:latest
+        docker logout
+      env:
+        TAG: ${{ matrix.pgbackrest_version }}
+        DOCKERHUBUSER: ${{ secrets.DOCKEHUB_USER }}
+        DOCKERHUBPKG: ${{ secrets.DOCKEHUB_TOKEN }}
+
+    - name: Push pgbackrest images to GitHub Registry
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo ${GITHUBPKG} | docker login ghcr.io -u ${GITHUBUSER} --password-stdin
+        docker tag pgbackrest:${TAG} ghcr.io/woblerr/pgbackrest:${TAG}
+        docker push ghcr.io/woblerr/pgbackrest:${TAG}
+        docker tag pgbackrest:${TAG} ghcr.io/woblerr/pgbackrest:${TAG}-${REPO_TAG}
+        docker push ghcr.io/woblerr/pgbackrest:${TAG}-${REPO_TAG}
+        docker logout
+      env:
+        TAG: ${{ matrix.pgbackrest_version }}
+        GITHUBUSER: ${{ github.actor }}
+        GITHUBPKG: ${{ secrets.GUTHUB_CR_PAT }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+
+    - name: Push pgbackrest images to GitHub Registry with tag latest
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.pgbackrest_version == env.latest_version
+      run: |
+        echo ${GITHUBPKG} | docker login ghcr.io -u ${GITHUBUSER} --password-stdin
+        docker tag pgbackrest:${TAG} ghcr.io/woblerr/pgbackrest:latest
+        docker push ghcr.io/woblerr/pgbackrest:latest
+        docker logout
+      env:
+        TAG: ${{ matrix.pgbackrest_version }}
+        GITHUBUSER: ${{ github.actor }}
+        GITHUBPKG: ${{ secrets.GUTHUB_CR_PAT }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+
