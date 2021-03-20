@@ -1,6 +1,7 @@
 FROM ubuntu:20.04 AS builder
 
 ARG BACKREST_VERSION
+ARG BACKREST_COMPLETION_VERSION
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -19,12 +20,16 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/${BACKREST_VERSION}.tar.gz \
-    && tar -xzf /tmp/${BACKREST_VERSION}.tar.gz -C /tmp \
+RUN wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-release-${BACKREST_VERSION} /tmp/pgbackrest-release \
     && cd /tmp/pgbackrest-release/src \
     && ./configure \
     && make
+
+RUN wget https://github.com/woblerr/pgbackrest-bash-completion/archive/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
+    && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
+    && mv /tmp/pgbackrest-bash-completion-$(echo ${BACKREST_COMPLETION_VERSION} | tr -d v) /tmp/pgbackrest-bash-completion
 
 FROM ubuntu:20.04
 
@@ -52,6 +57,7 @@ COPY files/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh \
     && groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && useradd --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
+    && mkdir -p -m 755 /etc/bash_completion.d \
     && mkdir -p -m 755 /var/log/pgbackrest \
     && mkdir -p -m 755 /etc/pgbackrest/conf.d \
     && touch /etc/pgbackrest/pgbackrest.conf \
@@ -62,7 +68,9 @@ RUN chmod +x /entrypoint.sh \
     && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone
 
- LABEL \
+COPY --from=builder /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /etc/bash_completion.d
+
+LABEL \
     org.opencontainers.image.version="${REPO_BUILD_TAG}" \
     org.opencontainers.image.source="https://github.com/woblerr/docker-pgbackrest"
 

@@ -39,7 +39,7 @@ docker pull ghcr.io/woblerr/pgbackrest:tag
 
 ## Run
 
-You will need to mount the necessary directories or files inside the container (or use this image to build your own on top of it)
+You will need to mount the necessary directories or files inside the container (or use this image to build your own on top of it).
 
 ### Simple
 
@@ -48,6 +48,8 @@ docker run --rm  pgbackrest:2.32 pgbackrest help
 ```
 
 ### Injecting inside
+
+The image contains [pgbackrest-bash-completion](https://github.com/woblerr/pgbackrest-bash-completion) script. You can complete `pgbackrest` commands by pressing tab key.
 
 ```bash
 docker run --rm -it pgbackrest:2.32 bash
@@ -112,5 +114,5 @@ docker build -f Dockerfile --build-arg BACKREST_VERSION=2.32 -t pgbackrest:2.32 
 or
 
 ```bash
-make build TAG=2.32
+make build_version TAG=2.32
 ```
