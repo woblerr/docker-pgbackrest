@@ -10,6 +10,7 @@ jobs:
         pgbackrest_version: ["2.29", "2.30", "2.31", "2.32" ]
     env: 
       latest_version: "2.32"
+      pgbackrest_completion_version: "v0.2"
     steps:
     - uses: actions/checkout@v2
 
@@ -21,10 +22,11 @@ jobs:
 
     - name: Build pgbackrest images
       run: |
-        docker build --rm -f Dockerfile --build-arg BACKREST_VERSION=${TAG} --build-arg REPO_BUILD_TAG=${REPO_TAG} -t pgbackrest:${TAG} .
+        docker build --rm -f Dockerfile --build-arg BACKREST_VERSION=${TAG} --build-arg REPO_BUILD_TAG=${REPO_TAG} --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} -t pgbackrest:${TAG} .
       env: 
         TAG: ${{ matrix.pgbackrest_version }}
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
 
     - name: Test pgbackrest images
       run: |
