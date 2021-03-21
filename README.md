@@ -88,7 +88,7 @@ docker run --rm \
 
 ### Example for backup to local path for PostgreSQL running locally in Chicago
 
-PostgreSQL run from user `postgres:postgres` with UID:GID `1001:1001`. PostgresQL data path - `/var/lib/postgresql/12/main`, pgBackRest backup path - `/var/lib/pgbackrest`.
+PostgreSQL run from user `postgres:postgres` with UID:GID `1001:1001`. PostgreSQL data path - `/var/lib/postgresql/12/main`, pgBackRest backup path - `/var/lib/pgbackrest`.
 
 ```bash
 docker run --rm \
