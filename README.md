@@ -6,7 +6,8 @@
 
 Supported pgBackRest version tags:
 
-* `2.32`, `latest`
+* `2.33`, `latest`
+* `2.32`
 * `2.31`
 * `2.30`
 * `2.29`
