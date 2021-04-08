@@ -7,7 +7,7 @@ all: $(BACKREST_VERSIONS)
 .PHONY: $(BACKREST_VERSIONS)
 $(BACKREST_VERSIONS):
 	@echo "Build pgbackrest:$@ docker image"
-	docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$@ -build-arg BACKREST_COMPLETION_VERSION=$(BACKREST_COMP_VERSION) -t pgbackrest:$@ .
+	docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(BACKREST_COMP_VERSION) -t pgbackrest:$@ .
 	docker run pgbackrest:$@
 
 .PHONY: build_version
