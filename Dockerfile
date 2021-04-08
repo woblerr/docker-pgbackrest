@@ -56,7 +56,7 @@ COPY files/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh \
     && groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
-    && useradd --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
+    && useradd --shell /bin/bash --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
     && mkdir -p -m 755 /etc/bash_completion.d \
     && mkdir -p -m 755 /var/log/pgbackrest \
     && mkdir -p -m 755 /etc/pgbackrest/conf.d \
