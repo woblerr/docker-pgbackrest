@@ -109,11 +109,11 @@ docker run --rm \
 ## Build
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.32 -t pgbackrest:2.32 .
+make build_version TAG=2.32
 ```
 
 or
 
 ```bash
-make build_version TAG=2.32
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.32 --build-arg BACKREST_COMPLETION_VERSION=v0.2 -t pgbackrest:2.32 .
 ```
