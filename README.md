@@ -14,6 +14,8 @@ Supported pgBackRest version tags:
 
 The image is based on the official ubuntu image. Each version of pgBackRest builds from the source code in a separate `builder` container.
 
+The image contains [pgbackrest-bash-completion](https://github.com/woblerr/pgbackrest-bash-completion) script. You can complete `pgbackrest` commands by pressing tab key.
+
 Environment variables supported by this image:
 
 * `TZ` - container's time zone, default `Europe/Moscow`;
@@ -45,18 +47,16 @@ You will need to mount the necessary directories or files inside the container (
 ### Simple
 
 ```bash
-docker run --rm  pgbackrest:2.32 pgbackrest help
+docker run --rm  pgbackrest:2.33 pgbackrest help
 ```
 
 ### Injecting inside
 
-The image contains [pgbackrest-bash-completion](https://github.com/woblerr/pgbackrest-bash-completion) script. You can complete `pgbackrest` commands by pressing tab key.
-
 ```bash
-docker run --rm -it pgbackrest:2.32 bash
+docker run --rm -it pgbackrest:2.33 bash
 
 pgbackrest@cac1f58b56f2:/$ pgbackrest version
-pgBackRest 2.32
+pgBackRest 2.33
 ```
 
 ### Example for Dedicated Repository Host
@@ -70,7 +70,7 @@ docker run --rm \
     -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.32 \
+    pgbackrest:2.33 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -83,7 +83,7 @@ docker run --rm \
     -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.29 \
+    pgbackrest:2.30 \
     pgbackrest backup --stanza demo-old --type full --log-level-console info
 ```
 
@@ -102,18 +102,18 @@ docker run --rm \
     -v /var/lib/postgresql/12/main:/var/lib/postgresql/12/main \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 \
-    pgbackrest:2.32 \
+    pgbackrest:2.33 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
 ## Build
 
 ```bash
-make build_version TAG=2.32
+make build_version TAG=2.33
 ```
 
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.32 --build-arg BACKREST_COMPLETION_VERSION=v0.2 -t pgbackrest:2.32 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.33 --build-arg BACKREST_COMPLETION_VERSION=v0.3 -t pgbackrest:2.33 .
 ```
