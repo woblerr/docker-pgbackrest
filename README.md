@@ -4,13 +4,13 @@
 
 [pgBackRest](https://pgbackrest.org/) inside Docker can be useful when you using [Dedicated Repository Host](https://pgbackrest.org/user-guide.html#repo-host) or inside CI/CD systems.
 
-Supported pgBackRest version tags:
+Supported pgBackRest version tags (last 5 releases):
 
-* `2.33`, `latest`
+* `2.34`, `latest`
+* `2.33`
 * `2.32`
 * `2.31`
 * `2.30`
-* `2.29`
 
 The image is based on the official ubuntu image. Each version of pgBackRest builds from the source code in a separate `builder` container.
 
@@ -47,16 +47,16 @@ You will need to mount the necessary directories or files inside the container (
 ### Simple
 
 ```bash
-docker run --rm  pgbackrest:2.33 pgbackrest help
+docker run --rm  pgbackrest:2.34 pgbackrest help
 ```
 
 ### Injecting inside
 
 ```bash
-docker run --rm -it pgbackrest:2.33 bash
+docker run --rm -it pgbackrest:2.34 bash
 
 pgbackrest@cac1f58b56f2:/$ pgbackrest version
-pgBackRest 2.33
+pgBackRest 2.34
 ```
 
 ### Example for Dedicated Repository Host
@@ -70,7 +70,7 @@ docker run --rm \
     -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.33 \
+    pgbackrest:2.34 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -102,18 +102,18 @@ docker run --rm \
     -v /var/lib/postgresql/12/main:/var/lib/postgresql/12/main \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 \
-    pgbackrest:2.33 \
+    pgbackrest:2.34 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
 ## Build
 
 ```bash
-make build_version TAG=2.33
+make build_version TAG=2.34
 ```
 
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.33 --build-arg BACKREST_COMPLETION_VERSION=v0.3 -t pgbackrest:2.33 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.34 --build-arg BACKREST_COMPLETION_VERSION=v0.3 -t pgbackrest:2.34 .
 ```
