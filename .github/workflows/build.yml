@@ -52,7 +52,7 @@ jobs:
         echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
         docker buildx build --push \
             -f Dockerfile \
-            --platform linux/amd64,linux/arm64 
+            --platform linux/amd64,linux/arm64 \
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
             --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
@@ -77,7 +77,7 @@ jobs:
         echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
         docker buildx build --push \
             -f Dockerfile \
-            --platform linux/amd64,linux/arm64 
+            --platform linux/amd64,linux/arm64 \
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
             --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
