@@ -17,7 +17,11 @@ if [ "${uid}" = "0" ]; then
         usermod -g ${BACKREST_GID} -l ${BACKREST_USER} -u ${BACKREST_UID} -m -d /home/${BACKREST_USER} pgbackrest
     fi
     # Correct user:group
-    chown -R ${BACKREST_USER}:${BACKREST_GROUP} /var/log/pgbackrest /etc/pgbackrest
+    chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
+        /var/log/pgbackrest \
+        /var/lib/pgbackrest \
+        /var/spool/pgbackrest \
+        /etc/pgbackrest
     # pgBackRest completion
     echo "source /etc/bash_completion.d/pgbackrest-completion.sh" >> /home/${BACKREST_USER}/.bashrc
     exec gosu ${BACKREST_USER} "$@"

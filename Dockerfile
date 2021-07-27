@@ -52,22 +52,26 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /tmp/pgbackrest-release/src/pgbackrest /usr/bin/pgbackrest
-COPY files/entrypoint.sh /entrypoint.sh
 
-RUN chmod +x /entrypoint.sh \
-    && groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
+RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && useradd --shell /bin/bash --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
     && mkdir -p -m 755 /etc/bash_completion.d \
-    && mkdir -p -m 755 /var/log/pgbackrest \
-    && mkdir -p -m 755 /etc/pgbackrest/conf.d \
+    && mkdir -p -m 750 /var/log/pgbackrest \
+        /var/lib/pgbackrest \
+        /var/spool/pgbackrest \
+        /etc/pgbackrest \
+        /etc/pgbackrest/conf.d \
     && touch /etc/pgbackrest/pgbackrest.conf \
-    && chmod 644 /etc/pgbackrest/pgbackrest.conf \
+    && chmod 640 /etc/pgbackrest/pgbackrest.conf \
     && chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
         /var/log/pgbackrest \
-        /etc/pgbackrest\
+        /var/lib/pgbackrest \
+        /var/spool/pgbackrest \
+        /etc/pgbackrest \
     && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone
 
+COPY --chmod=755 files/entrypoint.sh /entrypoint.sh
 COPY --from=builder /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /etc/bash_completion.d
 
 LABEL \
