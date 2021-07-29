@@ -4,7 +4,9 @@
 
 [pgBackRest](https://pgbackrest.org/) inside Docker can be useful when you using [Dedicated Repository Host](https://pgbackrest.org/user-guide.html#repo-host) or inside CI/CD systems.
 
-Supported pgBackRest version tags (last 5 releases):
+The repository contains information for the last 5 releases of pgBackRest. If necessary to use an older version -  do a [manual build](#build).
+
+Supported pgBackRest version tags:
 
 * `2.34`, `latest`
 * `2.33`
