@@ -15,6 +15,7 @@ RUN apt-get update \
         libzstd-dev \
         libbz2-dev \
         libz-dev \
+        libyaml-dev \
         wget \
     && apt-get autoremove -y \
     && apt-get clean \
