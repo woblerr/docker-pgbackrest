@@ -8,11 +8,11 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 
 Supported pgBackRest version tags:
 
-* `2.35`, `latest`
+* `2.36`, `latest`
+* `2.35`
 * `2.34`
 * `2.33`
 * `2.32`
-* `2.31`
 
 The image is based on the official ubuntu image. Each version of pgBackRest builds from the source code in a separate `builder` container.
 
@@ -117,5 +117,5 @@ make build_version TAG=2.34
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.34 --build-arg BACKREST_COMPLETION_VERSION=v0.3 -t pgbackrest:2.34 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.34 --build-arg BACKREST_COMPLETION_VERSION=v0.4 -t pgbackrest:2.34 .
 ```
