@@ -117,5 +117,5 @@ make build_version TAG=2.34
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.34 --build-arg BACKREST_COMPLETION_VERSION=v0.4 -t pgbackrest:2.34 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.34 --build-arg BACKREST_COMPLETION_VERSION=v0.5 -t pgbackrest:2.34 .
 ```

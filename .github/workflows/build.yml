@@ -10,7 +10,7 @@ jobs:
         pgbackrest_version: ["2.33", "2.34", "2.35", "2.36", "2.37"]
     env: 
       latest_version: "2.37"
-      pgbackrest_completion_version: "v0.4"
+      pgbackrest_completion_version: "v0.5"
       build_platforms: "linux/amd64,linux/arm64"
     steps:
     - uses: actions/checkout@v2
