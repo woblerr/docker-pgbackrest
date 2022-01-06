@@ -8,11 +8,11 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 
 Supported pgBackRest version tags:
 
-* `2.36`, `latest`
+* `2.37`, `latest`
+* `2.36`
 * `2.35`
 * `2.34`
 * `2.33`
-* `2.32`
 
 The image is based on the official ubuntu image. Each version of pgBackRest builds from the source code in a separate `builder` container.
 
