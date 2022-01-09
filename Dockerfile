@@ -45,6 +45,7 @@ ENV TZ="Europe/Moscow" \
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y  --no-install-recommends \
         postgresql-client \
+        ca-certificates \
         libxml2 \
         gosu \
         openssh-client \
