@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 uid=$(id -u)
-# Execution command
+# Execution command.
 backrest_command="pgbackrest"
 
 if [ "${uid}" = "0" ]; then
