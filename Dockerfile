@@ -40,11 +40,15 @@ ENV TZ="Europe/Moscow" \
     BACKREST_USER="pgbackrest" \
     BACKREST_UID=2001 \
     BACKREST_GROUP="pgbackrest" \
-    BACKREST_GID=2001
+    BACKREST_GID=2001 \
+    BACKREST_HOST_TYPE="ssh" \
+    BACKREST_TLS_WAIT=15 \
+    BACKREST_TLS_SERVER="disable"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y  --no-install-recommends \
         postgresql-client \
+        ca-certificates \
         libxml2 \
         gosu \
         openssh-client \
@@ -62,6 +66,7 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
         /var/spool/pgbackrest \
         /etc/pgbackrest \
         /etc/pgbackrest/conf.d \
+        /etc/pgbackrest/cert \
     && touch /etc/pgbackrest/pgbackrest.conf \
     && chmod 640 /etc/pgbackrest/pgbackrest.conf \
     && chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
