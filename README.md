@@ -26,7 +26,7 @@ Environment variables supported by this image:
 * `BACKREST_GROUP` - group name of internal `${BACKREST_USER}` user, default `pgbackrest`;
 * `BACKREST_GID` - GID of internal `${BACKREST_USER}` user, default `2001`;
 * `BACKREST_HOST_TYPE` - repository host protocol type, default `ssh`, available values: `ssh`, `tls`;
-* `BACKREST_TLS_WAIT` - =15 \
+* `BACKREST_TLS_WAIT` - waiting for TLS server startup in seconds when `BACKREST_HOST_TYPE=tls`, default `15`;
 * `BACKREST_TLS_SERVER` - start container as pgBackRest TLS server, default `disable`, available values: `disable`, `enable`.
 
 ## Pull
@@ -109,7 +109,7 @@ There are two mode for using TLS for communication.
   
   You need to set `BACKREST_HOST_TYPE=tls`.
 
-  Using `BACKREST_TLS_WAIT`, you can change the server startup wait. By default, checking that the server is running will be performed after `15 seconds`.
+  Using `BACKREST_TLS_WAIT`, you can change the TLS server startup waiting. By default, checking that the TLS server is running will be performed after `15 seconds`.
 
   The variable should be `BACKREST_TLS_SERVER=disable`.
 
