@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
 uid=$(id -u)
+su_command="gosu"
+# Check user-spec command
+[ "$(grep -E "^ID=" /etc/os-release | cut -d'=' -f2)" == "alpine" ] && su_command="su-exec"
 # Execution command.
 backrest_command="pgbackrest"
 
 if [ "${uid}" = "0" ]; then
     # Exec pgBackRest from specific user.
-    backrest_command="gosu ${BACKREST_USER} pgbackrest"
+    backrest_command="${su_command} ${BACKREST_USER} pgbackrest"
     # Custom time zone.
     if [ "${TZ}" != "Europe/Moscow" ]; then
         cp /usr/share/zoneinfo/${TZ} /etc/localtime
@@ -27,7 +30,7 @@ if [ "${uid}" = "0" ]; then
         /var/spool/pgbackrest \
         /etc/pgbackrest
     # pgBackRest completion.
-    echo "source /etc/bash_completion.d/pgbackrest-completion.sh" >> /home/${BACKREST_USER}/.bashrc
+    echo "source /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh" >> /home/${BACKREST_USER}/.bashrc
 fi
 
 # Start docker container as pgBackRest TLS server.
@@ -50,7 +53,7 @@ if [ "${BACKREST_HOST_TYPE}" == "tls" ] && [ "${BACKREST_TLS_SERVER}" == "disabl
 fi
 
 if [ "${uid}" = "0" ]; then
-    exec gosu ${BACKREST_USER} "$@"
+    exec ${su_command} ${BACKREST_USER} "$@"
 else
     exec "$@"
 fi

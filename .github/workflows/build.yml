@@ -46,7 +46,22 @@ jobs:
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
 
-    - name: Build and push tag image to ghcr.io and Docker Hub
+    - name: Build pgbackrest alpine images
+      run: |
+        docker buildx build \
+          -f Dockerfile.alpine \
+          --platform ${BUILD_PLATFORMS} \
+          --build-arg BACKREST_VERSION=${TAG} \
+          --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+          --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+          -t pgbackrest:${TAG}-alpine .
+      env: 
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
+
+    - name: Build images and push tag to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       run: |
         echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
@@ -71,8 +86,32 @@ jobs:
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
 
+    - name: Build alpine images and push tag to ghcr.io and Docker Hub
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
+        echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
+        docker buildx build --push \
+            -f Dockerfile.alpine \
+            --platform ${BUILD_PLATFORMS} \
+            --build-arg BACKREST_VERSION=${TAG} \
+            --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+            --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            -t ghcr.io/${GITHUB_USER}/pgbackrest:${TAG}-alpine \
+            -t ghcr.io/${GITHUB_USER}/pgbackrest:${TAG}-alpine-${REPO_TAG} \
+            -t ${DOCKERHUB_USER}/pgbackrest:${TAG}-alpine \
+            -t ${DOCKERHUB_USER}/pgbackrest:${TAG}-alpine-${REPO_TAG} .
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_PKG: ${{ secrets.GUTHUB_CR_PAT }}
+        DOCKERHUB_USER: ${{ secrets.DOCKEHUB_USER }}
+        DOCKERHUB_PKG: ${{ secrets.DOCKEHUB_TOKEN }}
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
 
-    - name: Build and push tag (latest) image to ghcr.io and Docker Hub
+    - name: Build image and push tag (latest) to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.pgbackrest_version == env.latest_version
       run: |
         echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
