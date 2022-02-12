@@ -31,7 +31,7 @@ jobs:
     - name: Available platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
 
-    - name: Build pgbackrest images
+    - name: Build pgbackrest image
       run: |
         docker buildx build \
           -f Dockerfile \
@@ -46,7 +46,7 @@ jobs:
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
 
-    - name: Build pgbackrest alpine images
+    - name: Build pgbackrest alpine image
       run: |
         docker buildx build \
           -f Dockerfile.alpine \
@@ -61,7 +61,7 @@ jobs:
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
 
-    - name: Build images and push tag to ghcr.io and Docker Hub
+    - name: Build image and push tag to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       run: |
         echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
@@ -86,7 +86,7 @@ jobs:
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
 
-    - name: Build alpine images and push tag to ghcr.io and Docker Hub
+    - name: Build alpine image and push tag to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       run: |
         echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
