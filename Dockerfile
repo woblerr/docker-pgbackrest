@@ -56,12 +56,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /tmp/pgbackrest-release/src/pgbackrest /usr/bin/pgbackrest
-
 RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && useradd --shell /bin/bash --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
-    && mkdir -p -m 755 /etc/bash_completion.d \
-    && mkdir -p -m 750 /var/log/pgbackrest \
+    && mkdir -p -m 750 \
+        /home/${BACKREST_USER}/.bash_completion.d \
+        /var/log/pgbackrest \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
         /etc/pgbackrest \
@@ -70,6 +69,7 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && touch /etc/pgbackrest/pgbackrest.conf \
     && chmod 640 /etc/pgbackrest/pgbackrest.conf \
     && chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
+        /home/${BACKREST_USER}/.bash_completion.d \
         /var/log/pgbackrest \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
@@ -78,7 +78,8 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && echo "${TZ}" > /etc/timezone
 
 COPY --chmod=755 files/entrypoint.sh /entrypoint.sh
-COPY --from=builder /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /etc/bash_completion.d
+COPY --from=builder --chown=${BACKREST_USER}:${BACKREST_GROUP} /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh
+COPY --from=builder /tmp/pgbackrest-release/src/pgbackrest /usr/bin/pgbackrest
 
 LABEL \
     org.opencontainers.image.version="${REPO_BUILD_TAG}" \

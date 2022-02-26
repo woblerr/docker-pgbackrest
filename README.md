@@ -9,12 +9,17 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 Supported pgBackRest version tags:
 
 * `2.37`, `latest`
+* `2.37-alpine`
 * `2.36`
+* `2.36-alpine`
 * `2.35`
+* `2.35-alpine`
 * `2.34`
+* `2.34-alpine`
 * `2.33`
+* `2.33-alpine`
 
-The image is based on the official ubuntu image. Each version of pgBackRest builds from the source code in a separate `builder` container.
+The image is based on the official ubuntu or alpine image. For ubuntu image each version of pgBackRest builds from the source code in a separate `builder` container. For alpine image each version of pgBackRest builds from the source code in container using virtual package `.backrest-build`.
 
 The image contains [pgbackrest-bash-completion](https://github.com/woblerr/pgbackrest-bash-completion) script. You can complete `pgbackrest` commands by pressing tab key.
 
@@ -39,10 +44,18 @@ Change `tag` to to the version you need.
 docker pull woblerr/pgbackrest:tag
 ```
 
+```bash
+docker pull woblerr/pgbackrest:tag-alpine
+```
+
 * GitHub Registry:
 
 ```bash
 docker pull ghcr.io/woblerr/pgbackrest:tag
+```
+
+```bash
+docker pull ghcr.io/woblerr/pgbackrest:tag-alpine
 ```
 
 ## Run
@@ -200,8 +213,16 @@ docker run --rm \
 make build_version TAG=2.37
 ```
 
+```bash
+make build_version_alpine TAG=2.37
+```
+
 or
 
 ```bash
 docker build -f Dockerfile --build-arg BACKREST_VERSION=2.37 --build-arg BACKREST_COMPLETION_VERSION=v0.5 -t pgbackrest:2.37 .
+```
+
+```bash
+docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.37 --build-arg BACKREST_COMPLETION_VERSION=v0.5 -t pgbackrest:2.37-alpine .
 ```
