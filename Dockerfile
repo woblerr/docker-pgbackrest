@@ -19,14 +19,15 @@ RUN apt-get update \
         wget \
     && apt-get autoremove -y \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
-    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-release-${BACKREST_VERSION} /tmp/pgbackrest-release \
     && cd /tmp/pgbackrest-release/src \
     && ./configure \
-    && make \
-    && wget https://github.com/woblerr/pgbackrest-bash-completion/archive/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
+    && make
+
+RUN wget https://github.com/woblerr/pgbackrest-bash-completion/archive/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
     && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-bash-completion-$(echo ${BACKREST_COMPLETION_VERSION} | tr -d v) /tmp/pgbackrest-bash-completion
 
