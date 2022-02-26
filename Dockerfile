@@ -21,7 +21,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
+RUN wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-release-${BACKREST_VERSION} /tmp/pgbackrest-release \
     && cd /tmp/pgbackrest-release/src \
     && ./configure \
