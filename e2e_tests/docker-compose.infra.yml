@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    hostname: minio
+    environment:
+      - "MINIO_ROOT_USER"
+      - "MINIO_ROOT_PASSWORD"
+      - "MINIO_SITE_REGION"
+      - "MINIO_DOMAIN"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - ssh
+
+  createbucket:
+    image: minio/mc
+    container_name: createbucket
+    environment:
+      - "MINIO_ROOT_USER"
+      - "MINIO_ROOT_PASSWORD"
+      - "S3_MINIO_KEY"
+      - "S3_MINIO_KEY_SECRET"
+      - "S3_MINIO_HOSTNAME"
+      - "S3_MINIO_BUCKET"
+    depends_on:
+      - minio
+      - nginx
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc config host add \
+        ${S3_MINIO_HOSTNAME} \
+        http://minio:9000 \
+        ${MINIO_ROOT_USER} \
+        ${MINIO_ROOT_PASSWORD};
+      mc mb ${S3_MINIO_HOSTNAME}/${S3_MINIO_BUCKET};
+      mc admin user add ${S3_MINIO_HOSTNAME} ${S3_MINIO_KEY} ${S3_MINIO_KEY_SECRET};
+      mc admin policy set ${S3_MINIO_HOSTNAME} readwrite user=${S3_MINIO_KEY}
+      "
+    networks:
+      - ssh
+
+  nginx:
+    image: nginx:1.19.2-alpine
+    hostname: nginx
+    container_name: nginx
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/nginx/nginx-selfsigned.crt:/etc/nginx/nginx-selfsigned.crt:ro
+      - ./conf/nginx/nginx-selfsigned.key:/etc/nginx/nginx-selfsigned.key:ro
+    ports:
+      - "443:443"
+    depends_on:
+      - minio
+    networks:
+      ssh:
+        aliases:
+          - minio.local
+
+networks:
+  ssh:

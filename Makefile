@@ -1,6 +1,8 @@
 BACKREST_VERSIONS = 2.33 2.34 2.35 2.36 2.37
 TAG?=2.37
 BACKREST_COMP_VERSION?=v0.5
+UID := $(shell id -u)
+GID := $(shell id -g)
 
 all: $(BACKREST_VERSIONS) $(addsuffix -alpine,$(BACKREST_VERSIONS))
 
@@ -27,3 +29,13 @@ build_version_alpine:
 	@echo "Build pgbackrest:$(TAG)-alpine docker image"
 	docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(BACKREST_COMP_VERSION) -t pgbackrest:$(TAG)-alpine .
 	docker run pgbackrest:$(TAG)-alpine
+
+.PHONY: test-e2e
+test-e2e:
+	@echo "Run end-to-end tests"
+	make build_version
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml up -d --build --force-recreate --always-recreate-deps pg
+	@sleep 10
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml run --rm backup
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml down
+	

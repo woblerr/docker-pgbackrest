@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  pg:
+    build:
+      context: .
+      dockerfile: ./conf/pg/Dockerfile
+    image: pg-pgbackrest:${TAG}
+    container_name: pg
+    hostname: pg
+    volumes:
+      - "./conf/pg/pg_prepare.sh:/var/lib/postgresql/backup_prepare.sh"
+      - "./conf/pg/postgresql.auto.conf:/var/lib/postgresql/13/main/postgresql.auto.conf"
+      - "./conf/pg/ssh/authorized_keys:/var/lib/postgresql/.ssh/authorized_keys"
+      - "./conf/pg/sshd:/var/lib/postgresql/sshd"
+      - "./conf/pg/pg-pgbackrest.conf:/etc/pgbackrest/conf.d/pg-pgbackrest.conf"
+      - "./conf/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf"
+    command: /var/lib/postgresql/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    expose:
+      - "2222"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+    networks:
+      - ssh
+
+  backup:
+    image: pgbackrest:${TAG}
+    container_name: backup
+    hostname: backup
+    volumes:
+      - "./conf/backup/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
+      - "./conf/backup/backup_prepare.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/backup/backup-pgbackrest.conf:/etc/pgbackrest/conf.d/backup-pgbackrest.conf"
+      - "./conf/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf"
+    command: /home/pgbackrest/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+      - pg
+    networks:
+      - ssh
+
+networks:
+  ssh:
