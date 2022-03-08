@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 
 uid=$(id -u)
-su_command="gosu"
-# Check user-spec command
-[ "$(grep -E "^ID=" /etc/os-release | cut -d'=' -f2)" == "alpine" ] && su_command="su-exec"
 # Execution command.
 backrest_command="pgbackrest"
 
 if [ "${uid}" = "0" ]; then
     # Exec pgBackRest from specific user.
-    backrest_command="${su_command} ${BACKREST_USER} pgbackrest"
+    backrest_command="gosu ${BACKREST_USER} pgbackrest"
     # Custom time zone.
     if [ "${TZ}" != "Europe/Moscow" ]; then
         cp /usr/share/zoneinfo/${TZ} /etc/localtime
@@ -25,6 +22,7 @@ if [ "${uid}" = "0" ]; then
     fi
     # Correct user:group.
     chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
+        /home/${BACKREST_USER} \
         /var/log/pgbackrest \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
@@ -53,7 +51,7 @@ if [ "${BACKREST_HOST_TYPE}" == "tls" ] && [ "${BACKREST_TLS_SERVER}" == "disabl
 fi
 
 if [ "${uid}" = "0" ]; then
-    exec ${su_command} ${BACKREST_USER} "$@"
+    exec gosu ${BACKREST_USER} "$@"
 else
     exec "$@"
 fi

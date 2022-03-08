@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  pg:
+    build:
+      context: .
+      dockerfile: ./conf/pg/Dockerfile
+    image: pg-pgbackrest:${TAG}
+    container_name: pg
+    hostname: pg
+    command: /var/lib/postgresql/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    expose:
+      - "2222"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+    networks:
+      - ssh
+
+networks:
+  ssh:

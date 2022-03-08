@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  backup:
+    image: pgbackrest:${TAG}
+    container_name: backup
+    hostname: backup
+    volumes:
+      - "./conf/backup/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
+      - "./conf/backup/backup_prepare.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/backup/backup-pgbackrest.conf:/etc/pgbackrest/conf.d/backup-pgbackrest.conf"
+      - "./conf/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf"
+    command: /home/pgbackrest/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+      - pg
+    networks:
+      - ssh
+
+  backup_alpine:
+    image: pgbackrest:${TAG}-alpine
+    container_name: backup_alpine
+    hostname: backup_alpine
+    volumes:
+      - "./conf/backup/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
+      - "./conf/backup/backup_prepare.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/backup/backup-pgbackrest.conf:/etc/pgbackrest/conf.d/backup-pgbackrest.conf"
+      - "./conf/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf"
+    command: /home/pgbackrest/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+      - pg
+    networks:
+      - ssh
+
+networks:
+  ssh:

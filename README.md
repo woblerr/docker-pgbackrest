@@ -226,3 +226,13 @@ docker build -f Dockerfile --build-arg BACKREST_VERSION=2.37 --build-arg BACKRES
 ```bash
 docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.37 --build-arg BACKREST_COMPLETION_VERSION=v0.5 -t pgbackrest:2.37-alpine .
 ```
+
+## Running tests
+
+Run the end-to-end tests:
+
+```bash
+make test-e2e
+```
+
+See [tests description](README-e2e_tests.md).
