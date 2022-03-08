@@ -3,8 +3,6 @@
 uid=$(id -u)
 # Execution command.
 backrest_command="pgbackrest"
-# Defaule pgbackrest user home
-backrest_home="/home/${BACKREST_USER}"
 
 if [ "${uid}" = "0" ]; then
     # Exec pgBackRest from specific user.
