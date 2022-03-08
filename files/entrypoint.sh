@@ -17,28 +17,23 @@ if [ "${uid}" = "0" ]; then
         cp /usr/share/zoneinfo/${TZ} /etc/localtime
         echo "${TZ}" > /etc/timezone
     fi
-    # Check than custom user may already have home dir.
-    home_exist="$(getent passwd ${BACKREST_USER} | cut -d: -f6)"
-    if [ ! -z "${home_exist}" ]; then
-        backrest_home=${home_exist}
-    fi
     # Custom user group.
     if [ "${BACKREST_GROUP}" != "pgbackrest" ] || [ "${BACKREST_GID}" != "2001" ]; then
         groupmod -g ${BACKREST_GID} -n ${BACKREST_GROUP} pgbackrest
     fi
     # Custom user.
     if [ "${BACKREST_USER}" != "pgbackrest" ] || [ "${BACKREST_UID}" != "2001" ]; then
-        usermod -g ${BACKREST_GID} -l ${BACKREST_USER} -u ${BACKREST_UID} -m -d ${backrest_home} pgbackrest
+        usermod -g ${BACKREST_GID} -l ${BACKREST_USER} -u ${BACKREST_UID} -m -d /home/${BACKREST_USER} pgbackrest
     fi
-    # pgBackRest completion.
-    echo "source /etc/bash_completion.d/pgbackrest-completion.sh" >> ${backrest_home}/.bashrc
     # Correct user:group.
     chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
-        ${backrest_home} \
+        /home/${BACKREST_USER} \
         /var/log/pgbackrest \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
         /etc/pgbackrest
+    # pgBackRest completion.
+    echo "source /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh" >> /home/${BACKREST_USER}/.bashrc
 fi
 
 # Start docker container as pgBackRest TLS server.

@@ -34,8 +34,10 @@ build_version_alpine:
 test-e2e:
 	@echo "Run end-to-end tests"
 	make build_version
+	make build_version_alpine
 	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml up -d --build --force-recreate --always-recreate-deps pg
 	@sleep 10
 	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml run --rm backup
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml run --rm backup_alpine
 	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.yml -f e2e_tests/docker-compose.infra.yml down
 	

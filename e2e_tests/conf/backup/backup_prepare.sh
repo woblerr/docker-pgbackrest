@@ -10,3 +10,4 @@ ssh-keyscan -t rsa -p 2222 pg > ~/.ssh/known_hosts
 # Run pgBackRest test commands.
 pgbackrest stanza-create --stanza demo
 pgbackrest backup --stanza demo --type full
+pgbackrest info --stanza demo

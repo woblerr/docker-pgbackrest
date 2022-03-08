@@ -25,6 +25,13 @@ RUN apt-get update -y \
     && apt-get autopurge -y \
     && rm -rf /var/lib/apt/lists/*
 
+COPY --chmod=755 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/pg_prepare.sh /var/lib/postgresql/backup_prepare.sh
+COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/postgresql.auto.conf /var/lib/postgresql/13/main/postgresql.auto.conf
+COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/ssh/authorized_keys /var/lib/postgresql/.ssh/authorized_keys
+COPY --chmod=700 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/sshd /var/lib/postgresql/sshd
+COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/pg-pgbackrest.conf /etc/pgbackrest/conf.d/pg-pgbackrest.conf
+COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
+
 EXPOSE 2222
 
 ENTRYPOINT ["/entrypoint.sh"]
