@@ -46,9 +46,10 @@ ENV TZ="Europe/Moscow" \
     BACKREST_TLS_SERVER="disable"
 
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y  --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         postgresql-client \
         ca-certificates \
+        tzdata \
         libxml2 \
         gosu \
         openssh-client \
@@ -74,6 +75,7 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
         /etc/pgbackrest \
+    && unlink /etc/localtime \
     && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone
 
