@@ -5,7 +5,7 @@ The following architecture is used to run the tests.
 * Separate container with PostgreSQL instance and pgBackRest for backup. It's custom image, based on docker-pgbackrest image.
 * Separate container with pgBackRest. This is the `docker-pgbackrest` image.
 
-S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separate container with PostgreSQL instance is described in ``e2e_tests/docker-compose.pg.yml` and containers with pgBackRest for tests are described in `e2e_tests/docker-compose.yml`.
+S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separate container with PostgreSQL instance is described in `e2e_tests/docker-compose.pg.yml` and containers with pgBackRest for tests are described in `e2e_tests/docker-compose.yml`.
 
 ## Running tests
 
