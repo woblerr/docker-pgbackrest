@@ -8,7 +8,7 @@ if [ "${uid}" = "0" ]; then
     # Exec pgBackRest from specific user.
     backrest_command="gosu ${BACKREST_USER} pgbackrest"
     # Custom time zone.
-    if [ "${TZ}" != "Europe/Moscow" ]; then
+    if [ "${TZ}" != "Etc/UTC" ]; then
         cp /usr/share/zoneinfo/${TZ} /etc/localtime
         echo "${TZ}" > /etc/timezone
     fi
