@@ -36,7 +36,7 @@ FROM ubuntu:20.04
 
 ARG REPO_BUILD_TAG
 
-ENV TZ="Europe/Moscow" \
+ENV TZ="Etc/UTC" \
     BACKREST_USER="pgbackrest" \
     BACKREST_UID=2001 \
     BACKREST_GROUP="pgbackrest" \

@@ -25,7 +25,7 @@ The image contains [pgbackrest-bash-completion](https://github.com/woblerr/pgbac
 
 Environment variables supported by this image:
 
-* `TZ` - container's time zone, default `Europe/Moscow`;
+* `TZ` - container's time zone, default `Etc/UTC`;
 * `BACKREST_USER` - non-root user name for execution of the command, default `pgbackrest`;
 * `BACKREST_UID` - UID of internal `${BACKREST_USER}` user, default `2001`;
 * `BACKREST_GROUP` - group name of internal `${BACKREST_USER}` user, default `pgbackrest`;
