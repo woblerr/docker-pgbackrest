@@ -20,6 +20,8 @@ if [ "${uid}" = "0" ]; then
     if [ "${BACKREST_USER}" != "pgbackrest" ] || [ "${BACKREST_UID}" != "2001" ]; then
         usermod -g ${BACKREST_GID} -l ${BACKREST_USER} -u ${BACKREST_UID} -m -d /home/${BACKREST_USER} pgbackrest
     fi
+    # pgBackRest completion.
+    echo "source /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh" >> /home/${BACKREST_USER}/.bashrc
     # Correct user:group.
     chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
         /home/${BACKREST_USER} \
@@ -27,8 +29,6 @@ if [ "${uid}" = "0" ]; then
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
         /etc/pgbackrest
-    # pgBackRest completion.
-    echo "source /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh" >> /home/${BACKREST_USER}/.bashrc
 fi
 
 # Start docker container as pgBackRest TLS server.
