@@ -16,6 +16,7 @@ services:
       - "9001:9001"
     networks:
       - ssh
+      - tls
 
   createbucket:
     image: minio/mc
@@ -44,6 +45,7 @@ services:
       "
     networks:
       - ssh
+      - tls
 
   nginx:
     image: nginx:1.19.2-alpine
@@ -61,6 +63,10 @@ services:
       ssh:
         aliases:
           - minio.local
+      tls:
+        aliases:
+          - minio.local
 
 networks:
   ssh:
+  tls:

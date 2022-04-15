@@ -1,10 +1,13 @@
 ARG BACKREST_VERSION="2.38"
+ARG CONTAINER_TYPE="ssh"
 ARG PG_VERSION="13"
 
-FROM pgbackrest:${BACKREST_VERSION}
+FROM pgbackrest:${BACKREST_VERSION} AS pg_base
 ARG PG_VERSION
+ARG CONTAINER_TYPE
 ENV BACKREST_USER="postgres" \
-    BACKREST_GROUP="postgres"
+    BACKREST_GROUP="postgres" \
+    PG_VERSION="${PG_VERSION}"
 RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         curl \
@@ -19,19 +22,19 @@ RUN apt-get update -y \
         postgresql-contrib-${PG_VERSION} \
         openssh-server \
         rsyslog \
-    && /etc/init.d/ssh start \
-    && /etc/init.d/rsyslog start \
     && apt-get autoremove -y \
     && apt-get autopurge -y \
     && rm -rf /var/lib/apt/lists/*
+COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/postgresql.auto.conf /var/lib/postgresql/${PG_VERSION}/main/postgresql.auto.conf
+COPY --chmod=755 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/pg_prepare-${CONTAINER_TYPE}.sh /var/lib/postgresql/pg_prepare.sh
+COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/pg_pgbackrest-${CONTAINER_TYPE}.conf /etc/pgbackrest/pgbackrest.conf
 
-COPY --chmod=755 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/pg_prepare.sh /var/lib/postgresql/backup_prepare.sh
-COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/postgresql.auto.conf /var/lib/postgresql/13/main/postgresql.auto.conf
+FROM pg_base AS pg-ssh
 COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/ssh/authorized_keys /var/lib/postgresql/.ssh/authorized_keys
 COPY --chmod=700 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/sshd /var/lib/postgresql/sshd
-COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/pg-pgbackrest.conf /etc/pgbackrest/conf.d/pg-pgbackrest.conf
-COPY --chmod=640 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
 
-EXPOSE 2222
+FROM pg_base AS pg-tls
+COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pgbackrest/cert /etc/pgbackrest/cert
 
+FROM pg-${CONTAINER_TYPE}
 ENTRYPOINT ["/entrypoint.sh"]

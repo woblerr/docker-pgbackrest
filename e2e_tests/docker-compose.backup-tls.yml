@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+  backup_server-tls:
+    image: pgbackrest:${TAG}
+    container_name: backup_server-tls
+    hostname: backup_server-tls
+    volumes:
+      - "./conf/pgbackrest/cert/:/etc/pgbackrest/cert"
+      - "./conf/backup/backup_pgbackrest-tls.conf:/etc/pgbackrest/pgbackrest.conf"
+      - "backrest_data:/var/lib/pgbackrest"
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+      - "BACKREST_TLS_SERVER=enable"
+    expose:
+      - "8432"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+      - pg-tls
+    networks:
+      - tls
+
+  backup-tls:
+    image: pgbackrest:${TAG}
+    container_name: backup-tls
+    hostname: backup-tls
+    volumes:
+      - "./conf/backup/backup_prepare-tls.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/pgbackrest/cert/:/etc/pgbackrest/cert"
+      - "./conf/backup/backup_pgbackrest-tls.conf:/etc/pgbackrest/pgbackrest.conf"
+      - "backrest_data:/var/lib/pgbackrest"
+    command: /home/pgbackrest/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+      - pg-tls
+    networks:
+      - tls
+
+  backup_alpine-tls:
+    image: pgbackrest:${TAG}-alpine
+    container_name: backup_alpine-tls
+    hostname: backup_alpine-tls
+    volumes:
+      - "./conf/backup/backup_prepare-tls.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/pgbackrest/cert/:/etc/pgbackrest/cert"
+      - "./conf/backup/backup_pgbackrest-tls.conf:/etc/pgbackrest/pgbackrest.conf"
+      - "backrest_data:/var/lib/pgbackrest"
+    command: /home/pgbackrest/backup_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+      - pg-tls
+    networks:
+      - tls
+
+networks:
+  tls:
+
+volumes:
+  backrest_data:

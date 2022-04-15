@@ -1,15 +1,14 @@
 version: '3'
 
 services:
-  backup:
+  backup-ssh:
     image: pgbackrest:${TAG}
-    container_name: backup
-    hostname: backup
+    container_name: backup-ssh
+    hostname: backup-ssh
     volumes:
       - "./conf/backup/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
-      - "./conf/backup/backup_prepare.sh:/home/pgbackrest/backup_prepare.sh"
-      - "./conf/backup/backup-pgbackrest.conf:/etc/pgbackrest/conf.d/backup-pgbackrest.conf"
-      - "./conf/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf"
+      - "./conf/backup/backup_prepare-ssh.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/backup/backup_pgbackrest-ssh.conf:/etc/pgbackrest/pgbackrest.conf"
     command: /home/pgbackrest/backup_prepare.sh
     environment:
       - "BACKREST_UID"
@@ -18,19 +17,18 @@ services:
       - minio
       - nginx
       - createbucket
-      - pg
+      - pg-ssh
     networks:
       - ssh
 
-  backup_alpine:
+  backup_alpine-ssh:
     image: pgbackrest:${TAG}-alpine
-    container_name: backup_alpine
-    hostname: backup_alpine
+    container_name: backup_alpine-ssh
+    hostname: backup_alpine-ssh
     volumes:
       - "./conf/backup/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
-      - "./conf/backup/backup_prepare.sh:/home/pgbackrest/backup_prepare.sh"
-      - "./conf/backup/backup-pgbackrest.conf:/etc/pgbackrest/conf.d/backup-pgbackrest.conf"
-      - "./conf/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf"
+      - "./conf/backup/backup_prepare-ssh.sh:/home/pgbackrest/backup_prepare.sh"
+      - "./conf/backup/backup_pgbackrest-ssh.conf:/etc/pgbackrest/pgbackrest.conf"
     command: /home/pgbackrest/backup_prepare.sh
     environment:
       - "BACKREST_UID"
@@ -39,7 +37,7 @@ services:
       - minio
       - nginx
       - createbucket
-      - pg
+      - pg-ssh
     networks:
       - ssh
 

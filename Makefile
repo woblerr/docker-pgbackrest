@@ -33,16 +33,46 @@ build_version_alpine:
 .PHONY: test-e2e
 test-e2e:
 	@echo "Run end-to-end tests"
-	$(call set_permissions)
 	make build_version
 	make build_version_alpine
-	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg
-	@sleep 10
-	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.yml run --rm --no-deps backup
-	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.yml run --rm --no-deps backup_alpine
-	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.yml down
+	make test-e2e-ssh
+	make test-e2e-tls
+
+.PHONY: test-e2e-ssh
+test-e2e-ssh:
+	@echo "Run end-to-end tests for SSH communication"
+	$(call down_docker_compose,ssh)
+	$(call run_docker_compose,ssh)
+	$(call down_docker_compose,ssh)
+
+.PHONY: test-e2e-tls
+test-e2e-tls:
+	@echo "Run end-to-end tests for TLS communication"
+	$(call down_docker_compose,tls)
+	$(call run_docker_compose,tls)
+	$(call down_docker_compose,tls)
+
+.PHONY: test-e2e-down
+test-e2e-down:
+	$(call down_docker_compose,ssh)
+	$(call down_docker_compose,tls)
+
+define run_docker_compose
+	$(call set_permissions)
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-${1}
+	@if [ "${1}" == "tls" ]; then \
+		BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml up -d --no-deps backup_server-${1}; \
+	fi
+	@sleep 30
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml run --rm --name backup-${1} --no-deps backup-${1}
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml run --rm --name backup_alpine-${1} --no-deps backup_alpine-${1}
+endef
+
+define down_docker_compose
+	BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml down -v
+endef
 
 define set_permissions
 	@chmod 700 e2e_tests/conf/backup/ssh/ e2e_tests/conf/pg/ssh/ e2e_tests/conf/pg/sshd/ 
-	@chmod 600 e2e_tests/conf/backup/ssh/* e2e_tests/conf/pg/ssh/* e2e_tests/conf/pg/sshd/*
+	@chmod 600 e2e_tests/conf/backup/ssh/* e2e_tests/conf/pg/ssh/* e2e_tests/conf/pg/sshd/* e2e_tests/conf/pgbackrest/cert/*
 endef
