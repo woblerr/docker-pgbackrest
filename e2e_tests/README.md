@@ -9,7 +9,7 @@ S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separat
 
 ## Running tests
 
-By default, tests are performed only for the latest supported version of pgBackRest. To run tests for a different version, you need to change the variable `TAG` in `e2e_tests/env` file and specify `TAG` variable for `make` command.
+By default, tests are performed only for the latest supported version of pgBackRest. To run tests for a different version, you need to change the variable `TAG` in `e2e_tests/.env` file and specify `TAG` variable for `make` command.
 
 ```bash
 make test-e2e
