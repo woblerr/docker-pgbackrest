@@ -235,4 +235,4 @@ Run the end-to-end tests:
 make test-e2e
 ```
 
-See [tests description](README-e2e_tests.md).
+See [tests description](./e2e_tests/README.md).

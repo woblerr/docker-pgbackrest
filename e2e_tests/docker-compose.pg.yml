@@ -1,14 +1,16 @@
 version: '3'
 
 services:
-  pg:
+  pg-ssh:
     build:
       context: .
       dockerfile: ./conf/pg/Dockerfile
+      args:
+        CONTAINER_TYPE: ssh
     image: pg-pgbackrest:${TAG}
-    container_name: pg
-    hostname: pg
-    command: /var/lib/postgresql/backup_prepare.sh
+    container_name: pg-ssh
+    hostname: pg-ssh
+    command: /var/lib/postgresql/pg_prepare.sh
     environment:
       - "BACKREST_UID"
       - "BACKREST_GID"
@@ -21,5 +23,29 @@ services:
     networks:
       - ssh
 
+  pg-tls:
+    build:
+      context: .
+      dockerfile: ./conf/pg/Dockerfile
+      args:
+        CONTAINER_TYPE: tls
+    image: pg-pgbackrest:${TAG}
+    container_name: pg-tls
+    hostname: pg-tls
+    command: /var/lib/postgresql/pg_prepare.sh
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+      - "BACKREST_HOST_TYPE=tls"
+    expose:
+      - "8432"
+    depends_on:
+      - minio
+      - nginx
+      - createbucket
+    networks:
+      - tls
+
 networks:
   ssh:
+  tls:
