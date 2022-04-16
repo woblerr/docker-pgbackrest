@@ -54,6 +54,7 @@ test-e2e-tls:
 
 .PHONY: test-e2e-down
 test-e2e-down:
+	@echo "Stop old containers"
 	$(call down_docker_compose,ssh)
 	$(call down_docker_compose,tls)
 
