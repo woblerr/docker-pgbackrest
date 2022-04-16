@@ -2,10 +2,10 @@
 
 The following architecture is used to run the tests.
 * Separate containers for minio ang nginx. Official images [minio/minio](https://hub.docker.com/r/minio/minio/), [minio/mc](https://hub.docker.com/r/minio/mc) and [nginx](https://hub.docker.com/_/nginx) are used. It's necessary for S3 compatible storage for WAL archiving and backups.
-* Separate container with PostgreSQL instance and pgBackRest for backup. It's custom image, based on docker-pgbackrest image.
+* Separate container with PostgreSQL instance and pgBackRest for backup. It's custom image, based on `docker-pgbackrest` image.
 * Separate container with pgBackRest. This is the `docker-pgbackrest` image.
 
-S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separate container with PostgreSQL instance is described in `e2e_tests/docker-compose.pg.yml` and containers with pgBackRest for tests are described in `e2e_tests/docker-compose.backup-ssh.yml` and `e2e_tests/docker-compose.backup-tls.yml`.
+S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separate containers with PostgreSQL instances are described in `e2e_tests/docker-compose.pg.yml` and containers with pgBackRest for tests are described in `e2e_tests/docker-compose.backup-ssh.yml` for communication over `SSH` and `e2e_tests/docker-compose.backup-tls.yml` for communication over `TLS`.
 
 ## Running tests
 
@@ -16,8 +16,9 @@ make test-e2e
 ```
 
 Run tests for specific pgBackRest version:
+
 ```bash
-make test-e2e TAG=2.36
+make test-e2e TAG=2.38
 ```
 
 ### Use SSH
@@ -30,15 +31,28 @@ or
 
 ```bash
 cd [docker-pgbackrest-root]/e2e_tests
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml up -d pg-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --name backup-ssh --no-deps backup-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --name backup_alpine-ssh --no-deps backup_alpine-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup-ssh --no-deps backup-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup_alpine-ssh --no-deps backup_alpine-ssh
 BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml down
 ```
 
 ### Use TLS
 
-TODO.
+```bash
+make test-e2e-tls
+```
+
+or
+
+```bash
+cd [docker-pgbackrest-root]/e2e_tests
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml up -d --no-deps backup_server-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup-tls --no-deps backup-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup_alpine-tls --no-deps backup_alpine-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml down
+```
 
 ### Generate certificates
 
@@ -60,7 +74,7 @@ openssl x509 -in nginx-selfsigned.crt -text -noout
 #### pgBackRest
 
 ```bash
-cd [docker-pgbackrest-root]/e2e_tests/conf/pgbackrest_certs
+cd [docker-pgbackrest-root]/e2e_tests/conf/pgbackrest/cert
 
 # Test CA
 openssl genrsa -out pgbackrest-selfsigned-ca.key 4096
