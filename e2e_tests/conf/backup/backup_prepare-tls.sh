@@ -24,7 +24,8 @@ cnt_diff_repo_2=$(echo "${data_repo_2}" | grep 'diff backup' | wc -l)
 # this script is launched in two services (backup-tls and baclup_alpine-tls),
 # so valid result is 1 or 2 value (for separate and together launch).
 # The diff backup will always be 1 (by this script),
-# since it depends on the last full backup.
+# since full are considered differential for the purpose of retention.
+# See https://github.com/pgbackrest/pgbackrest/blob/e699402f99f70819bd922eb6150fbe1b837eca0d/src/command/expire/expire.c#L192-L194
 if ([ "${cnt_full_repo_1}" -eq "1" ] || [ "${cnt_full_repo_1}" -eq "2" ]) && \
    ([ "${cnt_full_repo_2}" -eq "1" ] || [ "${cnt_full_repo_2}" -eq "2" ]) && \
    [ "${cnt_diff_repo_2}" -eq "1" ]
