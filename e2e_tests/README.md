@@ -18,7 +18,7 @@ make test-e2e
 Run tests for specific pgBackRest version:
 
 ```bash
-make test-e2e TAG=2.38
+make test-e2e TAG=2.39
 ```
 
 ### Use SSH
