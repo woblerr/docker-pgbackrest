@@ -1,6 +1,6 @@
 BACKREST_VERSIONS = 2.35 2.36 2.37 2.38 2.39
 TAG?=2.39
-BACKREST_COMP_VERSION?=v0.5
+BACKREST_COMP_VERSION?=v0.6
 UID := $(shell id -u)
 GID := $(shell id -g)
 
