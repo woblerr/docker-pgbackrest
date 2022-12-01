@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pgbackrest_version: ["2.38", "2.39", "2.40", "2.41", "2.42"]
+        pgbackrest_version: ["2.39", "2.40", "2.41", "2.42", "2.43"]
     env: 
-      latest_version: "2.42"
+      latest_version: "2.43"
       pgbackrest_completion_version: "v0.8"
       build_platforms: "linux/amd64,linux/arm64"
     steps:
