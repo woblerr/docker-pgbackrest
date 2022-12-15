@@ -28,7 +28,8 @@ if [ "${uid}" = "0" ]; then
         /var/log/pgbackrest \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
-        /etc/pgbackrest
+        /etc/pgbackrest \
+        /tmp/pgbackrest
 fi
 
 # Start docker container as pgBackRest TLS server.

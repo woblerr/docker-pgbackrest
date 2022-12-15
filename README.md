@@ -107,6 +107,20 @@ docker run --rm \
     pgbackrest backup --stanza demo-old --type full --log-level-console info
 ```
 
+To exclude simultaneous execution of multiple backup processes for one stanza:
+
+```bash
+docker run --rm \
+    -e BACKREST_UID=1001 \
+    -e BACKREST_GID=1001 \
+    -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
+    -v /etc/pgbackrest:/etc/pgbackrest \
+    -v /var/lib/pgbackrest:/var/lib/pgbackrest \
+    -v /tmp/pgbackrest:/tmp/pgbackrest \
+    pgbackrest:2.43 \
+    pgbackrest backup --stanza demo --type full --log-level-console info
+```
+
 #### Use TLS
 
 Available only for `pgBackRest version >= 2.37`.

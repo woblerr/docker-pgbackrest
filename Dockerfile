@@ -67,6 +67,7 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
         /etc/pgbackrest \
         /etc/pgbackrest/conf.d \
         /etc/pgbackrest/cert \
+        /tmp/pgbackrest \
     && touch /etc/pgbackrest/pgbackrest.conf \
     && chmod 640 /etc/pgbackrest/pgbackrest.conf \
     && chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
@@ -75,6 +76,7 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
         /etc/pgbackrest \
+        /tmp/pgbackrest \
     && unlink /etc/localtime \
     && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone
