@@ -60,6 +60,7 @@ RUN apk add --no-cache --update \
         /etc/pgbackrest \
         /etc/pgbackrest/conf.d \
         /etc/pgbackrest/cert \
+        /tmp/pgbackrest \
     && cp /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh \
     && touch /etc/pgbackrest/pgbackrest.conf \
     && chmod 640 /etc/pgbackrest/pgbackrest.conf \
@@ -69,6 +70,7 @@ RUN apk add --no-cache --update \
         /var/lib/pgbackrest \
         /var/spool/pgbackrest \
         /etc/pgbackrest \
+        /tmp/pgbackrest \
     && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone \
     && rm -rf \
