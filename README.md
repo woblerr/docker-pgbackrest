@@ -234,11 +234,11 @@ make build_version_alpine TAG=2.44
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.44 --build-arg BACKREST_COMPLETION_VERSION=v0.8 -t pgbackrest:2.44 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.44 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.44 .
 ```
 
 ```bash
-docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.44 --build-arg BACKREST_COMPLETION_VERSION=v0.8 -t pgbackrest:2.44-alpine .
+docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.44 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.44-alpine .
 ```
 
 ## Running tests
