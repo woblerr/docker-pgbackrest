@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pgbackrest_version: ["2.39", "2.40", "2.41", "2.42", "2.43"]
+        pgbackrest_version: ["2.40", "2.41", "2.42", "2.43", "2.44"]
     env: 
-      latest_version: "2.43"
-      pgbackrest_completion_version: "v0.8"
+      latest_version: "2.44"
+      pgbackrest_completion_version: "v0.9"
       build_platforms: "linux/amd64,linux/arm64"
     steps:
     - uses: actions/checkout@v2
