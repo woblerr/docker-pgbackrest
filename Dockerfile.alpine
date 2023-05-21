@@ -78,6 +78,8 @@ RUN apk add --no-cache --update \
     && rm -rf \
         /tmp/pgbackrest-release \
         /tmp/pgbackrest-bash-completion \
+        /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+        /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
     && apk del .backrest-build \
     && rm -rf /var/cache/apk/*
 
