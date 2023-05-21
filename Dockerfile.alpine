@@ -1,7 +1,9 @@
 FROM alpine:3.16
 
 ARG BACKREST_VERSION
+ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/archive/release"
 ARG BACKREST_COMPLETION_VERSION
+ARG BACKREST_COMPLETION_VERSION_URL="https://github.com/woblerr/pgbackrest-bash-completion/archive"
 ARG REPO_BUILD_TAG
 
 ENV TZ="Etc/UTC" \
@@ -41,16 +43,16 @@ RUN apk add --no-cache --update \
         zlib-dev \
         yaml-dev \
     && ln -s /sbin/su-exec /usr/local/bin/gosu \
-    && wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
-    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
-    && mv /tmp/pgbackrest-release-${BACKREST_VERSION} /tmp/pgbackrest-release \
+    && wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+    && mkdir -p /tmp/pgbackrest-release \
+    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
     && cd /tmp/pgbackrest-release/src \
     && ./configure \
     && make \
     && cp /tmp/pgbackrest-release/src/pgbackrest /usr/bin/pgbackrest \
     && groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && useradd --shell /bin/bash --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
-    && wget https://github.com/woblerr/pgbackrest-bash-completion/archive/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
+    && wget ${BACKREST_COMPLETION_VERSION_URL}/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
     && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-bash-completion-$(echo ${BACKREST_COMPLETION_VERSION} | tr -d v) /tmp/pgbackrest-bash-completion \
     && mkdir -p -m 750 /var/log/pgbackrest \

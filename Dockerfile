@@ -1,7 +1,9 @@
 FROM ubuntu:20.04 AS builder
 
 ARG BACKREST_VERSION
+ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/archive/release"
 ARG BACKREST_COMPLETION_VERSION
+ARG BACKREST_COMPLETION_VERSION_URL="https://github.com/woblerr/pgbackrest-bash-completion/archive"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -21,14 +23,14 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/pgbackrest/pgbackrest/archive/release/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
-    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz -C /tmp \
-    && mv /tmp/pgbackrest-release-${BACKREST_VERSION} /tmp/pgbackrest-release \
+RUN wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+    && mkdir -p /tmp/pgbackrest-release \
+    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
     && cd /tmp/pgbackrest-release/src \
     && ./configure \
     && make
 
-RUN wget https://github.com/woblerr/pgbackrest-bash-completion/archive/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
+RUN wget ${BACKREST_COMPLETION_VERSION_URL}/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
     && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-bash-completion-$(echo ${BACKREST_COMPLETION_VERSION} | tr -d v) /tmp/pgbackrest-bash-completion
 
