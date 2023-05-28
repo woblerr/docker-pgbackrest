@@ -1,8 +1,8 @@
 BACKREST_VERSIONS = 2.41 2.42 2.43 2.44 2.45
 TAG?=2.45
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
-BACKREST_GPDB_VERSIONS = 2.40_arenadata2
-TAG_GPDB?=2.40_arenadata2
+BACKREST_GPDB_VERSIONS = 2.40_arenadata2 2.45_arenadata2
+TAG_GPDB?=2.45_arenadata2
 BACKREST_GPDB_DOWNLOAD_URL = https://github.com/arenadata/pgbackrest/archive
 BACKREST_COMP_VERSION?=v0.9
 UID := $(shell id -u)
