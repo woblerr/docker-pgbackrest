@@ -34,7 +34,7 @@ build_version_gpdb:
 	$(call gpdb_image_tag,IMAGE_TAG,$(TAG_GPDB))
 	@echo "Build pgbackrest:$(IMAGE_TAG) docker image"
 	docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(BACKREST_COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) .
-	docker run "pgbackrest:$(IMAGE_TAG)"
+	docker run pgbackrest:$(IMAGE_TAG)
 
 .PHONY: $(BACKREST_VERSIONS)-alpine
 $(addsuffix -alpine,$(BACKREST_VERSIONS)):
