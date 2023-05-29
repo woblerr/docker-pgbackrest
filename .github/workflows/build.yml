@@ -2,6 +2,10 @@ name: build
 
 on: [push, pull_request]
 
+env:
+  pgbackrest_completion_version: "v0.9"
+  build_platforms: "linux/amd64,linux/arm64"
+
 jobs:
   build_image:
     runs-on: ubuntu-latest
@@ -10,8 +14,7 @@ jobs:
         pgbackrest_version: ["2.41", "2.42", "2.43", "2.44", "2.45"]
     env: 
       latest_version: "2.45"
-      pgbackrest_completion_version: "v0.9"
-      build_platforms: "linux/amd64,linux/arm64"
+      download_url: "https://github.com/pgbackrest/pgbackrest/archive/release"
     steps:
     - uses: actions/checkout@v2
 
@@ -39,12 +42,14 @@ jobs:
           --build-arg BACKREST_VERSION=${TAG} \
           --build-arg REPO_BUILD_TAG=${REPO_TAG} \
           --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+          --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
           -t pgbackrest:${TAG} .
       env: 
         TAG: ${{ matrix.pgbackrest_version }}
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
 
     - name: Build pgbackrest alpine image
       run: |
@@ -54,12 +59,14 @@ jobs:
           --build-arg BACKREST_VERSION=${TAG} \
           --build-arg REPO_BUILD_TAG=${REPO_TAG} \
           --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+          --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
           -t pgbackrest:${TAG}-alpine .
       env: 
         TAG: ${{ matrix.pgbackrest_version }}
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
 
     - name: Build image and push tag to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -72,6 +79,7 @@ jobs:
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
             --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
             -t ghcr.io/${GITHUB_USER}/pgbackrest:${TAG} \
             -t ghcr.io/${GITHUB_USER}/pgbackrest:${TAG}-${REPO_TAG} \
             -t ${DOCKERHUB_USER}/pgbackrest:${TAG} \
@@ -85,6 +93,7 @@ jobs:
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
 
     - name: Build alpine image and push tag to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -97,6 +106,7 @@ jobs:
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
             --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
             -t ghcr.io/${GITHUB_USER}/pgbackrest:${TAG}-alpine \
             -t ghcr.io/${GITHUB_USER}/pgbackrest:${TAG}-alpine-${REPO_TAG} \
             -t ${DOCKERHUB_USER}/pgbackrest:${TAG}-alpine \
@@ -110,6 +120,7 @@ jobs:
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
 
     - name: Build image and push tag (latest) to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.pgbackrest_version == env.latest_version
@@ -122,6 +133,7 @@ jobs:
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
             --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
             -t ghcr.io/${GITHUB_USER}/pgbackrest:latest \
             -t ${DOCKERHUB_USER}/pgbackrest:latest .
       env:
@@ -133,3 +145,123 @@ jobs:
         REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
         COMPL_TAG: ${{ env.pgbackrest_completion_version }}
         BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
+
+  build_gpdb_image:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pgbackrest_version: ["2.40_arenadata2", "2.45_arenadata2"]
+    env: 
+      latest_version: "2.45_arenadata2"
+      download_url: "https://github.com/arenadata/pgbackrest/archive"
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get repo tag
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      id: vars
+      run: |
+        echo ::set-output name=repo_tag::$(echo ${GITHUB_REF} | cut -d'/' -f3)
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Available platforms
+      run: echo ${{ steps.buildx.outputs.platforms }}
+
+    - name: Build pgbackrest gpdb image
+      run: |
+        IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
+        docker buildx build \
+          -f Dockerfile \
+          --platform ${BUILD_PLATFORMS} \
+          --build-arg BACKREST_VERSION=${TAG} \
+          --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+          --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+          --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
+          -t pgbackrest:${IMAGE_TAG} .
+      env: 
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
+
+    - name: Build pgbackrest gpdb alpine image
+      run: |
+        IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
+        docker buildx build \
+          -f Dockerfile.alpine \
+          --platform ${BUILD_PLATFORMS} \
+          --build-arg BACKREST_VERSION=${TAG} \
+          --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+          --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+          --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
+          -t pgbackrest:${IMAGE_TAG}-alpine .
+      env: 
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
+
+    - name: Build gpdb image and push tag to ghcr.io and Docker Hub
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
+        echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
+        IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
+        docker buildx build --push \
+            -f Dockerfile \
+            --platform ${BUILD_PLATFORMS} \
+            --build-arg BACKREST_VERSION=${TAG} \
+            --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+            --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
+            -t ghcr.io/${GITHUB_USER}/pgbackrest:${IMAGE_TAG} \
+            -t ghcr.io/${GITHUB_USER}/pgbackrest:${IMAGE_TAG}-${REPO_TAG} \
+            -t ${DOCKERHUB_USER}/pgbackrest:${IMAGE_TAG} \
+            -t ${DOCKERHUB_USER}/pgbackrest:${IMAGE_TAG}-${REPO_TAG} .
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_PKG: ${{ secrets.GUTHUB_CR_PAT }}
+        DOCKERHUB_USER: ${{ secrets.DOCKEHUB_USER }}
+        DOCKERHUB_PKG: ${{ secrets.DOCKEHUB_TOKEN }}
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
+
+    - name: Build gpdb alpine image and push tag to ghcr.io and Docker Hub
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo ${GITHUB_PKG} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
+        echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
+        IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
+        docker buildx build --push \
+            -f Dockerfile.alpine \
+            --platform ${BUILD_PLATFORMS} \
+            --build-arg BACKREST_VERSION=${TAG} \
+            --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+            --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
+            -t ghcr.io/${GITHUB_USER}/pgbackrest:${IMAGE_TAG}-alpine \
+            -t ghcr.io/${GITHUB_USER}/pgbackrest:${IMAGE_TAG}-alpine-${REPO_TAG} \
+            -t ${DOCKERHUB_USER}/pgbackrest:${IMAGE_TAG}-alpine \
+            -t ${DOCKERHUB_USER}/pgbackrest:${IMAGE_TAG}-alpine-${REPO_TAG} .
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_PKG: ${{ secrets.GUTHUB_CR_PAT }}
+        DOCKERHUB_USER: ${{ secrets.DOCKEHUB_USER }}
+        DOCKERHUB_PKG: ${{ secrets.DOCKEHUB_TOKEN }}
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
