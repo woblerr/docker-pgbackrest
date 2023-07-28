@@ -22,6 +22,8 @@ Supported pgBackRest version tags:
 The repository also contains information for releases of pgBackRest fork with Greenplum support (see [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833)). Details - [build with Greenplum support](#build-with-greenplum-support).
 
 Supported pgBackRest version tags with Greenplum support:
+* `2.47-gpdb`
+* `2.47-gpdb-alpine`
 * `2.45-gpdb`
 * `2.45-gpdb-alpine`
 * `2.40-gpdb`
@@ -282,7 +284,7 @@ docker pull ghcr.io/woblerr/pgbackrest:tag-gpdb-alpine
 ### Run
 
 ```bash
-docker run --rm  pgbackrest:2.45-gpdb pgbackrest help
+docker run --rm  pgbackrest:2.47-gpdb pgbackrest help
 ```
 
 ## Running tests
