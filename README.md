@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/woblerr/docker-pgbackrest/workflows/build/badge.svg)](https://github.com/woblerr/docker-pgbackrest/actions)
 
-[pgBackRest](https://pgbackrest.org/) inside Docker can be useful when you using [Dedicated Repository Host](https://pgbackrest.org/user-guide.html#repo-host) or inside CI/CD systems.
+[pgBackRest](https://pgbackrest.org/) inside Docker can be useful for refusing to install pgBackRest as a system package (using yum or apt, for example) on your Dedicated Repository Host](https://pgbackrest.org/user-guide.html#repo-host) or inside CI/CD systems. You can just run pgBackRest in Docker. At the same time, the PostgreSQL server side must be configured according to the pgBackRest documentation.
 
 The repository contains information for the last 5 releases of pgBackRest. If necessary to use an older version -  do a [manual build](#build).
 
@@ -227,7 +227,7 @@ docker run --rm \
     -v /etc/pgbackrest/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf \
     -v /etc/pgbackrest/cert:/etc/pgbackrest/cert \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.32 \
+    pgbackrest:2.47 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
