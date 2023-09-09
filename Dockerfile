@@ -18,6 +18,7 @@ RUN apt-get update \
         libbz2-dev \
         libz-dev \
         libyaml-dev \
+        libssh2-1-dev \
         wget \
     && apt-get autoremove -y \
     && apt-get clean \
@@ -53,6 +54,7 @@ RUN apt-get update \
         ca-certificates \
         tzdata \
         libxml2 \
+        libssh2-1 \
         gosu \
         openssh-client \
     && apt-get autoremove -y \

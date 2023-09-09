@@ -21,6 +21,7 @@ RUN apk add --no-cache --update \
         postgresql-client \
         ca-certificates \
         libxml2 \
+        libssh2 \
         su-exec \
         procps \
         tzdata \
@@ -42,6 +43,7 @@ RUN apk add --no-cache --update \
         bzip2-dev \
         zlib-dev \
         yaml-dev \
+        libssh2-dev \
     && ln -s /sbin/su-exec /usr/local/bin/gosu \
     && wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
     && mkdir -p /tmp/pgbackrest-release \
