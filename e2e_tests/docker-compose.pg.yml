@@ -20,6 +20,7 @@ services:
       - minio
       - nginx
       - createbucket
+      - sftp
     networks:
       - ssh
 
