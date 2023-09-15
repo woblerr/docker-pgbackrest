@@ -20,7 +20,7 @@ services:
       - minio
       - nginx
       - createbucket
-      - sftp
+      - sftp-ssh
     networks:
       - ssh
 
@@ -44,6 +44,7 @@ services:
       - minio
       - nginx
       - createbucket
+      - sftp-tls
     networks:
       - tls
 

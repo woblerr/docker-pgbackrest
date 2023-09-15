@@ -20,7 +20,7 @@ services:
       - nginx
       - createbucket
       - pg-ssh
-      - sftp
+      - sftp-ssh
     networks:
       - ssh
 
@@ -43,12 +43,9 @@ services:
       - nginx
       - createbucket
       - pg-ssh
-      - sftp
+      - sftp-ssh
     networks:
       - ssh
 
 networks:
   ssh:
-
-volumes:
-  backrest_data_ssh:

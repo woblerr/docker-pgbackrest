@@ -40,6 +40,12 @@ COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/ssh /var/lib/
 COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pg/sshd /var/lib/postgresql/sshd
 
 FROM pg_base AS pg-tls
+RUN mkdir -p -m 700 \
+        /var/lib/postgresql/.ssh \
+    && chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
+        /var/lib/postgresql/.ssh
+# Copy onle id_rsa_sftp and d_rsa_sftp.pub.
+COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/ssh/id_rsa_sftp* /var/lib/postgresql/.ssh/
 COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/pgbackrest/cert /etc/pgbackrest/cert
 
 FROM pg-${CONTAINER_TYPE}
