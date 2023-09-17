@@ -6,7 +6,7 @@ set -e
 # Add hosts to known_hosts.
 # Necessary for pgBackRest to work correctly over ssh and sftp.
 ssh-keyscan -t rsa -p 2222 pg-ssh > ~/.ssh/known_hosts
-ssh-keyscan -t rsa -p 2222 sftp-ssh >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa -p 2222 sftp >> ~/.ssh/known_hosts
 
 # Run pgBackRest test commands.
 pgbackrest stanza-create --stanza demo

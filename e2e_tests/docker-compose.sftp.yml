@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  sftp-ssh:
+  sftp:
     build:
       context: .
       dockerfile: ./conf/sftp/Dockerfile
@@ -10,7 +10,7 @@ services:
     hostname: sftp
     command: /home/pgbackrest/sftp_prepare.sh
     volumes:
-      - "backrest_data_sftp-ssh:/var/lib/pgbackrest"
+      - "backrest_data_sftp:/var/lib/pgbackrest"
     environment:
       - "BACKREST_UID"
       - "BACKREST_GID"
@@ -19,24 +19,6 @@ services:
       - "2222"
     networks:
       - ssh
-
-  sftp-tls :
-    build:
-      context: .
-      dockerfile: ./conf/sftp/Dockerfile
-    image: sftp-pgbackrest:${TAG}
-    container_name: sftp
-    hostname: sftp
-    command: /home/pgbackrest/sftp_prepare.sh
-    volumes:
-      - "backrest_data_sftp-tls:/var/lib/pgbackrest"
-    environment:
-      - "BACKREST_UID"
-      - "BACKREST_GID"
-      - "BACKREST_TLS_SERVER=disable"
-    expose:
-      - "2222"
-    networks:
       - tls
 
 networks:
@@ -44,5 +26,4 @@ networks:
   tls:
 
 volumes:
-  backrest_data_sftp-ssh:
-  backrest_data_sftp-tls:
+  backrest_data_sftp:
