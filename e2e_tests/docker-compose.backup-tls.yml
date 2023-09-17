@@ -28,6 +28,8 @@ services:
     container_name: backup-tls
     hostname: backup-tls
     volumes:
+      - "./conf/ssh/id_rsa_sftp:/home/pgbackrest/.ssh/id_rsa_sftp"
+      - "./conf/ssh/id_rsa_sftp.pub:/home/pgbackrest/.ssh/id_rsa_sftp.pub"
       - "./conf/backup/backup_prepare-tls.sh:/home/pgbackrest/backup_prepare.sh"
       - "./conf/pgbackrest/cert/:/etc/pgbackrest/cert"
       - "./conf/backup/backup_pgbackrest-tls.conf:/etc/pgbackrest/pgbackrest.conf"
@@ -41,6 +43,8 @@ services:
       - nginx
       - createbucket
       - pg-tls
+      - backup_server-tls
+      - sftp-tls
     networks:
       - tls
 
@@ -49,6 +53,8 @@ services:
     container_name: backup_alpine-tls
     hostname: backup_alpine-tls
     volumes:
+      - "./conf/ssh/id_rsa_sftp:/home/pgbackrest/.ssh/id_rsa_sftp"
+      - "./conf/ssh/id_rsa_sftp.pub:/home/pgbackrest/.ssh/id_rsa_sftp.pub"
       - "./conf/backup/backup_prepare-tls.sh:/home/pgbackrest/backup_prepare.sh"
       - "./conf/pgbackrest/cert/:/etc/pgbackrest/cert"
       - "./conf/backup/backup_pgbackrest-tls.conf:/etc/pgbackrest/pgbackrest.conf"
@@ -62,6 +68,8 @@ services:
       - nginx
       - createbucket
       - pg-tls
+      - backup_server-tls
+      - sftp-tls
     networks:
       - tls
 
