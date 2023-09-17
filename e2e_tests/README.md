@@ -2,10 +2,11 @@
 
 The following architecture is used to run the tests.
 * Separate containers for minio ang nginx. Official images [minio/minio](https://hub.docker.com/r/minio/minio/), [minio/mc](https://hub.docker.com/r/minio/mc) and [nginx](https://hub.docker.com/_/nginx) are used. It's necessary for S3 compatible storage for WAL archiving and backups.
+* Separate container for `sftp` server. It's necessary for sftp compatible storage for WAL archiving and backups. It's custom image, based on `docker-pgbackrest` image.
 * Separate container with PostgreSQL instance and pgBackRest for backup. It's custom image, based on `docker-pgbackrest` image.
 * Separate container with pgBackRest. This is the `docker-pgbackrest` image.
 
-S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separate containers with PostgreSQL instances are described in `e2e_tests/docker-compose.pg.yml` and containers with pgBackRest for tests are described in `e2e_tests/docker-compose.backup-ssh.yml` for communication over `SSH` and `e2e_tests/docker-compose.backup-tls.yml` for communication over `TLS`.
+S3 compatible storage is described in `e2e_tests/docker-compose.s3.yml`, separate containers with `sftp` compatible storage is described in `e2e_tests/docker-compose.sftp.yml`, separate containers with PostgreSQL instances are described in `e2e_tests/docker-compose.pg.yml` and containers with pgBackRest for tests are described in `e2e_tests/docker-compose.backup-ssh.yml` for communication over `SSH` and `e2e_tests/docker-compose.backup-tls.yml` for communication over `TLS`.
 
 ## Running tests
 
@@ -18,8 +19,10 @@ make test-e2e
 Run tests for specific pgBackRest version:
 
 ```bash
-make test-e2e TAG=2.39
+make test-e2e TAG=2.46
 ```
+
+SFTP support has appeared since pgBackrest `v2.46`. For `pgBackrest versions < v2.46` you need to use tests from `docker-pgbackrest v0.20` or earlier.
 
 ### Use SSH
 
@@ -31,10 +34,10 @@ or
 
 ```bash
 cd [docker-pgbackrest-root]/e2e_tests
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup-ssh --no-deps backup-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup_alpine-ssh --no-deps backup_alpine-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml down
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup-ssh --no-deps backup-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup_alpine-ssh --no-deps backup_alpine-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml down
 ```
 
 ### Use TLS
@@ -47,16 +50,16 @@ or
 
 ```bash
 cd [docker-pgbackrest-root]/e2e_tests
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml up -d --no-deps backup_server-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup-tls --no-deps backup-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup_alpine-tls --no-deps backup_alpine-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml down
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml up -d --no-deps backup_server-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup-tls --no-deps backup-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup_alpine-tls --no-deps backup_alpine-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml down
 ```
 
-### Generate certificates
+### Generate certificates and keys
 
-The certificates in `e2e_tests` directory are used only for end-to-end tests and are not used for actual services.
+The certificates and keys in `e2e_tests` directory are used only for end-to-end tests and are not used for actual services.
 
 #### Nginx
 
@@ -122,4 +125,19 @@ openssl x509 -req -extensions v3_req -CAcreateserial \
     -extfile pgbackrest-selfsigned-client.cnf
 
 openssl x509 -in pgbackrest-selfsigned-client.crt -text -noout
+```
+
+#### SSH and SFTP keys
+```bash
+cd [docker-pgbackrest-root]/e2e_tests/conf/ssh
+
+# ssh keys
+ssh-keygen -f ./id_rsa -t rsa -b 4096 -N "" -C ""
+
+# sftp keys
+ssh-keygen -f ./id_rsa_sftp -t rsa -b 4096 -N "" -C "" -m PEM
+
+# authorized_keys
+cat ./id_rsa.pub >> ./authorized_keys
+cat ./id_rsa_sftp.pub >> ./authorized_keys
 ```
