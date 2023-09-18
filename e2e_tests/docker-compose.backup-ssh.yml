@@ -20,7 +20,7 @@ services:
       - nginx
       - createbucket
       - pg-ssh
-      - sftp-ssh
+      - sftp
     networks:
       - ssh
 
@@ -43,7 +43,7 @@ services:
       - nginx
       - createbucket
       - pg-ssh
-      - sftp-ssh
+      - sftp
     networks:
       - ssh
 
