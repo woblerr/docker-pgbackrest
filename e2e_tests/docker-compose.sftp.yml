@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: ./conf/sftp/Dockerfile
+      args:
+        BACKREST_VERSION: ${TAG}
     image: sftp-pgbackrest:${TAG}
     container_name: sftp
     hostname: sftp
