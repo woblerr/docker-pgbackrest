@@ -7,6 +7,7 @@ services:
       dockerfile: ./conf/pg/Dockerfile
       args:
         CONTAINER_TYPE: ssh
+        BACKREST_VERSION: ${TAG}
     image: pg-pgbackrest:${TAG}
     container_name: pg-ssh
     hostname: pg-ssh
@@ -30,6 +31,7 @@ services:
       dockerfile: ./conf/pg/Dockerfile
       args:
         CONTAINER_TYPE: tls
+        BACKREST_VERSION: ${TAG}
     image: pg-pgbackrest:${TAG}
     container_name: pg-tls
     hostname: pg-tls
