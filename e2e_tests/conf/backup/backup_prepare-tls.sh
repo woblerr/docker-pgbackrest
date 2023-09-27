@@ -3,6 +3,10 @@
 # Exit on errors and on command pipe failures.
 set -e
 
+# Add hosts to known_hosts.
+# Necessary for pgBackRest to work correctly over sftp.
+ssh-keyscan -t rsa -p 2222 sftp >> ~/.ssh/known_hosts
+
 # Run pgBackRest test commands.
 pgbackrest stanza-create --stanza demo
 pgbackrest backup --stanza demo --type full --repo 1
