@@ -1,4 +1,4 @@
-ARG BACKREST_VERSION="2.48"
+ARG BACKREST_VERSION="2.49"
 
 FROM pgbackrest:${BACKREST_VERSION}
 RUN apt-get update -y \
