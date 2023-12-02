@@ -151,9 +151,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pgbackrest_version: ["2.40_arenadata2", "2.45_arenadata3", "2.47_arenadata3"]
+        pgbackrest_version: ["2.40_arenadata2", "2.45_arenadata3", "2.47_arenadata4"]
     env: 
-      latest_version: "2.47_arenadata3"
+      latest_version: "2.47_arenadata4"
       download_url: "https://github.com/arenadata/pgbackrest/archive"
     steps:
     - uses: actions/checkout@v2
