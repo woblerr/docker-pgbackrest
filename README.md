@@ -8,7 +8,9 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 
 Supported pgBackRest version tags:
 
-* `2.49`, `latest`
+* `2.50`, `latest`
+* `2.50-alpine`
+* `2.49`,
 * `2.49-alpine`
 * `2.48`,
 * `2.48-alpine`
@@ -16,12 +18,12 @@ Supported pgBackRest version tags:
 * `2.47-alpine`
 * `2.46`
 * `2.46-alpine`
-* `2.45`
-* `2.45-alpine`
 
 The repository also contains information for releases of pgBackRest fork with Greenplum support (see [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833)). Details - [build with Greenplum support](#build-with-greenplum-support).
 
 Supported pgBackRest version tags with Greenplum support:
+* `2.50-gpdb`
+* `2.50-gpdb-alpine`
 * `2.47-gpdb`
 * `2.47-gpdb-alpine`
 * `2.45-gpdb`
@@ -75,16 +77,16 @@ You will need to mount the necessary directories or files inside the container (
 ### Simple
 
 ```bash
-docker run --rm  pgbackrest:2.49 pgbackrest help
+docker run --rm  pgbackrest:2.50 pgbackrest help
 ```
 
 ### Injecting inside
 
 ```bash
-docker run --rm -it pgbackrest:2.49 bash
+docker run --rm -it pgbackrest:2.50 bash
 
 pgbackrest@cac1f58b56f2:/$ pgbackrest version
-pgBackRest 2.49
+pgBackRest 2.50
 ```
 
 ### Example for Dedicated Repository Host
@@ -100,7 +102,7 @@ docker run --rm \
     -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.49 \
+    pgbackrest:2.50 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -127,7 +129,7 @@ docker run --rm \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /tmp/pgbackrest:/tmp/pgbackrest \
-    pgbackrest:2.49 \
+    pgbackrest:2.50 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -163,7 +165,7 @@ docker run -d \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -p 8432:8432 \
     --name backrest_server \
-    pgbackrest:2.49
+    pgbackrest:2.50
 ```
 
 ##### Run container with TLS server in background for pgBackRest execution over TLS
@@ -175,7 +177,7 @@ docker run --rm \
     -e BACKREST_HOST_TYPE=tls \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.49 \
+    pgbackrest:2.50 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -194,7 +196,7 @@ docker run --rm \
     -v /var/lib/postgresql/12/main:/var/lib/postgresql/12/main \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 \
-    pgbackrest:2.49 \
+    pgbackrest:2.50 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -214,7 +216,7 @@ docker run -d \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -p 8432:8432 \
     --name backrest_server \
-    pgbackrest:2.49
+    pgbackrest:2.50
 ```
 
 Performing a backup:
@@ -227,28 +229,28 @@ docker run --rm \
     -v /etc/pgbackrest/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf \
     -v /etc/pgbackrest/cert:/etc/pgbackrest/cert \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.49 \
+    pgbackrest:2.50 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
 ## Build
 
 ```bash
-make build_version TAG=2.49
+make build_version TAG=2.50
 ```
 
 ```bash
-make build_version_alpine TAG=2.49
+make build_version_alpine TAG=2.50
 ```
 
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.49 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.50 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.50 .
 ```
 
 ```bash
-docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.49-alpine .
+docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.50 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.50-alpine .
 ```
 
 ## Build with Greenplum support
