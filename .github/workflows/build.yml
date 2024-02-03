@@ -153,7 +153,6 @@ jobs:
       matrix:
         pgbackrest_version: ["2.40_arenadata2", "2.45_arenadata3", "2.47_arenadata4", "2.50_arenadata4"]
     env: 
-      latest_version: "2.50_arenadata4"
       download_url: "https://github.com/arenadata/pgbackrest/archive"
     steps:
     - uses: actions/checkout@v2
