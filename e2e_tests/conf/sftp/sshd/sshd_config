@@ -10,6 +10,8 @@ Protocol 2
 # HostKeys for protocol version 2
 HostKey /home/pgbackrest/sshd/ssh_host_rsa_key
 
+HostKeyAlgorithms +ssh-rsa
+PubkeyAcceptedKeyTypes +ssh-rsa
 
 # Logging
 SyslogFacility AUTH

@@ -1,0 +1,96 @@
+FROM alpine:3.19
+
+ARG BACKREST_VERSION
+ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/archive/release"
+ARG BACKREST_COMPLETION_VERSION
+ARG BACKREST_COMPLETION_VERSION_URL="https://github.com/woblerr/pgbackrest-bash-completion/archive"
+ARG REPO_BUILD_TAG
+
+ENV TZ="Etc/UTC" \
+    BACKREST_USER="pgbackrest" \
+    BACKREST_UID=2001 \
+    BACKREST_GROUP="pgbackrest" \
+    BACKREST_GID=2001 \
+    BACKREST_HOST_TYPE="ssh" \
+    BACKREST_TLS_WAIT=15 \
+    BACKREST_TLS_SERVER="disable"
+
+RUN apk add --no-cache --update \
+        bash \
+        shadow \
+        postgresql-client \
+        ca-certificates \
+        libxml2 \
+        libssh2 \
+        su-exec \
+        procps \
+        tzdata \
+        openssh \
+        libbz2 \
+        lz4-libs \
+        zstd-libs \
+    && apk --update add --virtual .backrest-build \
+        build-base \
+        wget \
+        meson \
+        gcc \
+        libpq-dev \
+        openssl-dev \
+        libxml2-dev \
+        pkgconfig \
+        lz4-dev \
+        zstd-dev \
+        bzip2-dev \
+        zlib-dev \
+        yaml-dev \
+        libssh2-dev \
+    && ln -s /sbin/su-exec /usr/local/bin/gosu \
+    && wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+    && mkdir -p /tmp/pgbackrest-release /tmp/pgbackrest-build \
+    && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
+    && meson setup /tmp/pgbackrest-build /tmp/pgbackrest-release \
+    && ninja -C /tmp/pgbackrest-build \
+    && cp /tmp/pgbackrest-build/src/pgbackrest /usr/bin/pgbackrest \
+    && groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
+    && useradd --shell /bin/bash --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
+    && wget ${BACKREST_COMPLETION_VERSION_URL}/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
+    && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
+    && mv /tmp/pgbackrest-bash-completion-$(echo ${BACKREST_COMPLETION_VERSION} | tr -d v) /tmp/pgbackrest-bash-completion \
+    && mkdir -p -m 750 /var/log/pgbackrest \
+        /home/${BACKREST_USER}/.bash_completion.d \
+        /var/lib/pgbackrest \
+        /var/spool/pgbackrest \
+        /etc/pgbackrest \
+        /etc/pgbackrest/conf.d \
+        /etc/pgbackrest/cert \
+        /tmp/pgbackrest \
+    && cp /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh \
+    && touch /etc/pgbackrest/pgbackrest.conf \
+    && chmod 640 /etc/pgbackrest/pgbackrest.conf \
+    && chown -R ${BACKREST_USER}:${BACKREST_GROUP} \
+        /home/${BACKREST_USER}/.bash_completion.d \
+        /var/log/pgbackrest \
+        /var/lib/pgbackrest \
+        /var/spool/pgbackrest \
+        /etc/pgbackrest \
+        /tmp/pgbackrest \
+    && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo "${TZ}" > /etc/timezone \
+    && rm -rf \
+        /tmp/pgbackrest-release \
+        /tmp/pgbackrest-build \
+        /tmp/pgbackrest-bash-completion \
+        /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+        /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
+    && apk del .backrest-build \
+    && rm -rf /var/cache/apk/*
+
+COPY --chmod=755 files/entrypoint.sh /entrypoint.sh
+
+LABEL \
+    org.opencontainers.image.version="${REPO_BUILD_TAG}" \
+    org.opencontainers.image.source="https://github.com/woblerr/docker-pgbackrest"
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["pgbackrest", "version"]

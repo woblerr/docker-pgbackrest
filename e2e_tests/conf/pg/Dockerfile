@@ -1,6 +1,6 @@
-ARG BACKREST_VERSION="2.50"
+ARG BACKREST_VERSION="2.51"
 ARG CONTAINER_TYPE="ssh"
-ARG PG_VERSION="13"
+ARG PG_VERSION="16"
 
 FROM pgbackrest:${BACKREST_VERSION} AS pg_base
 ARG PG_VERSION
@@ -12,8 +12,9 @@ RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         curl \
         gnupg \
-    && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-    && echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" \
+        lsb-release \
+    && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" \
         > /etc/apt/sources.list.d/pgdg.list
 RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
