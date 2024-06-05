@@ -1,5 +1,5 @@
-BACKREST_VERSIONS = 2.47 2.48 2.49 2.50 2.51
-TAG?=2.51
+BACKREST_VERSIONS = 2.48 2.49 2.50 2.51 2.52
+TAG?=2.52
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
 BACKREST_GPDB_VERSIONS = 2.45_arenadata3 2.47_arenadata4 2.50_arenadata4
 TAG_GPDB?=2.50_arenadata4
