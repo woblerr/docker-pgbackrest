@@ -32,6 +32,7 @@ RUN apk add --no-cache --update \
     && apk --update add --virtual .backrest-build \
         build-base \
         wget \
+        py3-setuptools \
         meson \
         gcc \
         libpq-dev \
