@@ -2,7 +2,7 @@
 
 The following architecture is used to run the tests.
 * Separate containers for minio ang nginx. Official images [minio/minio](https://hub.docker.com/r/minio/minio/), [minio/mc](https://hub.docker.com/r/minio/mc) and [nginx](https://hub.docker.com/_/nginx) are used. It's necessary for S3 compatible storage for WAL archiving and backups.
-* Separate container for `sftp` server. It's necessary for sftp compatible storage for WAL archiving and backups. It's custom image, based on `docker-pgbackrest` image.
+* Separate containers for `sftp` servers. It's necessary for sftp compatible storage for WAL archiving and backups. It's custom image, based on `docker-pgbackrest` image. The `rsa` (outdated) and `ed25519` keys are checked.
 * Separate container with PostgreSQL instance and pgBackRest for backup. It's custom image, based on `docker-pgbackrest` image.
 * Separate container with pgBackRest. This is the `docker-pgbackrest` image.
 
@@ -131,13 +131,17 @@ openssl x509 -in pgbackrest-selfsigned-client.crt -text -noout
 ```bash
 cd [docker-pgbackrest-root]/e2e_tests/conf/ssh
 
-# ssh keys
+# ssh keys rsa
 ssh-keygen -f ./id_rsa -t rsa -b 4096 -N "" -C ""
 
-# sftp keys
+# sftp keys rsa (not secure, but still very popular)
 ssh-keygen -f ./id_rsa_sftp -t rsa -b 4096 -N "" -C "" -m PEM
+
+# sftp keys ed25519
+ssh-keygen -f ./id_ed25519_sftp -t ed25519  -N "" -C ""
 
 # authorized_keys
 cat ./id_rsa.pub >> ./authorized_keys
 cat ./id_rsa_sftp.pub >> ./authorized_keys
+cat ./id_ed25519_sftp.pub >> ./authorized_keys
 ```

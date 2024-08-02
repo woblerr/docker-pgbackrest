@@ -106,8 +106,8 @@ define down_docker_compose
 endef
 
 define set_permissions
-	@chmod 700 e2e_tests/conf/ssh/ e2e_tests/conf/pg/sshd/ e2e_tests/conf/sftp/sshd/ e2e_tests/conf/pgbackrest/cert/ 
-	@chmod 600 e2e_tests/conf/ssh/* e2e_tests/conf/pg/sshd/* e2e_tests/conf/sftp/sshd/* e2e_tests/conf/pgbackrest/cert/*
+	@chmod 700 e2e_tests/conf/ssh/ e2e_tests/conf/pg/sshd/ e2e_tests/conf/sftp/sshd-rsa/ e2e_tests/conf/sftp/sshd-ed25519/ e2e_tests/conf/pgbackrest/cert/ 
+	@chmod 600 e2e_tests/conf/ssh/* e2e_tests/conf/pg/sshd/* e2e_tests/conf/sftp/sshd-rsa/* e2e_tests/conf/sftp/sshd-ed25519/* e2e_tests/conf/pgbackrest/cert/*
 endef
 
 define gpdb_image_tag

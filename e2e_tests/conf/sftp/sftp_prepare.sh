@@ -4,4 +4,4 @@
 set -e
 
 # Start sshd.
-/usr/sbin/sshd -f ~/sshd/sshd_config -D
+/usr/sbin/sshd -f ~/sshd/sshd_config -D -e

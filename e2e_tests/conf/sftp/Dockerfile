@@ -1,6 +1,7 @@
 ARG BACKREST_VERSION="2.53"
 
 FROM pgbackrest:${BACKREST_VERSION}
+ARG CONTAINER_TYPE="rsa"
 RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         apt-utils \
@@ -17,5 +18,5 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 COPY --chmod=755 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/sftp/sftp_prepare.sh /home/${BACKREST_USER}/sftp_prepare.sh
 COPY --chmod=600 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/ssh/authorized_keys /home/${BACKREST_USER}/.ssh/authorized_keys
-COPY --chmod=700 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/sftp/sshd /home/${BACKREST_USER}/sshd
+COPY --chmod=700 --chown=${BACKREST_USER}:${BACKREST_GROUP} ./conf/sftp/sshd-${CONTAINER_TYPE} /home/${BACKREST_USER}/sshd
 ENTRYPOINT ["/entrypoint.sh"]
