@@ -12,7 +12,8 @@ PG_DATA="/var/lib/postgresql/${PG_VERSION}/${PG_CLUSTER}"
 
 # Add host to known_hosts.
 # Necessary for pgBackRest to work correctly over sftp.
-ssh-keyscan -t rsa -p 2222 sftp > ~/.ssh/known_hosts
+ssh-keyscan -t rsa -p 2222 sftp-rsa > ~/.ssh/known_hosts
+ssh-keyscan -t ed25519 -p 2222 sftp-ed25519 >> ~/.ssh/known_hosts
 
 # Start postgres.
 pg_ctlcluster ${PG_VERSION} ${PG_CLUSTER} start --foreground

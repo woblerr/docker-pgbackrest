@@ -9,6 +9,8 @@ services:
       - "./conf/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
       - "./conf/ssh/id_rsa_sftp:/home/pgbackrest/.ssh/id_rsa_sftp"
       - "./conf/ssh/id_rsa_sftp.pub:/home/pgbackrest/.ssh/id_rsa_sftp.pub"
+      - "./conf/ssh/id_ed25519_sftp:/home/pgbackrest/.ssh/id_ed25519_sftp"
+      - "./conf/ssh/id_ed25519_sftp.pub:/home/pgbackrest/.ssh/id_ed25519_sftp.pub"
       - "./conf/backup/backup_prepare-ssh.sh:/home/pgbackrest/backup_prepare.sh"
       - "./conf/backup/backup_pgbackrest-ssh.conf:/etc/pgbackrest/pgbackrest.conf"
     command: /home/pgbackrest/backup_prepare.sh
@@ -20,7 +22,8 @@ services:
       - nginx
       - createbucket
       - pg-ssh
-      - sftp
+      - sftp-rsa
+      - sftp-ed25519
     networks:
       - ssh
 
@@ -32,6 +35,8 @@ services:
       - "./conf/ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa"
       - "./conf/ssh/id_rsa_sftp:/home/pgbackrest/.ssh/id_rsa_sftp"
       - "./conf/ssh/id_rsa_sftp.pub:/home/pgbackrest/.ssh/id_rsa_sftp.pub"
+      - "./conf/ssh/id_ed25519_sftp:/home/pgbackrest/.ssh/id_ed25519_sftp"
+      - "./conf/ssh/id_ed25519_sftp.pub:/home/pgbackrest/.ssh/id_ed25519_sftp.pub"
       - "./conf/backup/backup_prepare-ssh.sh:/home/pgbackrest/backup_prepare.sh"
       - "./conf/backup/backup_pgbackrest-ssh.conf:/etc/pgbackrest/pgbackrest.conf"
     command: /home/pgbackrest/backup_prepare.sh
@@ -43,7 +48,8 @@ services:
       - nginx
       - createbucket
       - pg-ssh
-      - sftp
+      - sftp-rsa
+      - sftp-ed25519
     networks:
       - ssh
 

@@ -1,18 +1,42 @@
 version: '3'
 
 services:
-  sftp:
+  sftp-rsa:
     build:
       context: .
       dockerfile: ./conf/sftp/Dockerfile
       args:
         BACKREST_VERSION: ${TAG}
-    image: sftp-pgbackrest:${TAG}
-    container_name: sftp
-    hostname: sftp
+        CONTAINER_TYPE: "rsa"
+    image: sftp-rsa-pgbackrest:${TAG}
+    container_name: sftp-rsa
+    hostname: sftp-rsa
     command: /home/pgbackrest/sftp_prepare.sh
     volumes:
-      - "backrest_data_sftp:/var/lib/pgbackrest"
+      - "backrest_data_sftp_rsa:/var/lib/pgbackrest"
+    environment:
+      - "BACKREST_UID"
+      - "BACKREST_GID"
+      - "BACKREST_TLS_SERVER=disable"
+    expose:
+      - "2222"
+    networks:
+      - ssh
+      - tls
+
+  sftp-ed25519:
+    build:
+      context: .
+      dockerfile: ./conf/sftp/Dockerfile
+      args:
+        BACKREST_VERSION: ${TAG}
+        CONTAINER_TYPE: "ed25519"
+    image: sftp-ed25519-pgbacrest:${TAG}
+    container_name: sftp-ed25519
+    hostname: sftp-ed25519
+    command: /home/pgbackrest/sftp_prepare.sh
+    volumes:
+      - "backrest_data_sftp_ed25519:/var/lib/demo"
     environment:
       - "BACKREST_UID"
       - "BACKREST_GID"
@@ -28,4 +52,5 @@ networks:
   tls:
 
 volumes:
-  backrest_data_sftp:
+  backrest_data_sftp_rsa:
+  backrest_data_sftp_ed25519:

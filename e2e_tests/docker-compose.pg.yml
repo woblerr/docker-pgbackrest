@@ -21,7 +21,8 @@ services:
       - minio
       - nginx
       - createbucket
-      - sftp
+      - sftp-rsa
+      - sftp-ed25519
     networks:
       - ssh
 
@@ -46,7 +47,7 @@ services:
       - minio
       - nginx
       - createbucket
-      - sftp
+      - sftp-rsa
     networks:
       - tls
 
