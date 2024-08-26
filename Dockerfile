@@ -7,8 +7,16 @@ ARG BACKREST_COMPLETION_VERSION_URL="https://github.com/woblerr/pgbackrest-bash-
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        make \
+        # According to the pgBackRest docs for v2.52, the python3-distutils package is needed for build from sources.
+        # See PR https://github.com/pgbackrest/pgbackrest/pull/2338.
+        # The python3-distutils package is deprecated.
+        # For Meson on Ubuntu 22.04 and higher it makes sense to use the package python3-setuptools.
+        # See https://ubuntu.pkgs.org/22.04/ubuntu-universe-amd64/meson_0.61.2-1_all.deb.html
+        # and https://ubuntu.pkgs.org/24.04/ubuntu-universe-amd64/meson_1.3.2-1ubuntu1_all.deb.html
+        # python3-distutils \
+        python3-setuptools \
         gcc \
+        meson \
         libpq-dev \
         libssl-dev \
         libxml2-dev \
@@ -25,11 +33,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
-    && mkdir -p /tmp/pgbackrest-release \
+    && mkdir -p /tmp/pgbackrest-release /tmp/pgbackrest-build \
     && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
-    && cd /tmp/pgbackrest-release/src \
-    && ./configure \
-    && make
+    && meson setup /tmp/pgbackrest-build /tmp/pgbackrest-release \
+    && ninja -C /tmp/pgbackrest-build
 
 RUN wget ${BACKREST_COMPLETION_VERSION_URL}/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
     && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
@@ -87,7 +94,7 @@ RUN groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
 
 COPY --chmod=755 files/entrypoint.sh /entrypoint.sh
 COPY --from=builder --chown=${BACKREST_USER}:${BACKREST_GROUP} /tmp/pgbackrest-bash-completion/pgbackrest-completion.sh /home/${BACKREST_USER}/.bash_completion.d/pgbackrest-completion.sh
-COPY --from=builder /tmp/pgbackrest-release/src/pgbackrest /usr/bin/pgbackrest
+COPY --from=builder /tmp/pgbackrest-build/src/pgbackrest /usr/bin/pgbackrest
 
 LABEL \
     org.opencontainers.image.version="${REPO_BUILD_TAG}" \

@@ -32,8 +32,7 @@ RUN apk add --no-cache --update \
     && apk --update add --virtual .backrest-build \
         build-base \
         wget \
-        py3-setuptools \
-        meson \
+        make \
         gcc \
         libpq-dev \
         openssl-dev \
@@ -47,11 +46,12 @@ RUN apk add --no-cache --update \
         libssh2-dev \
     && ln -s /sbin/su-exec /usr/local/bin/gosu \
     && wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
-    && mkdir -p /tmp/pgbackrest-release /tmp/pgbackrest-build \
+    && mkdir -p /tmp/pgbackrest-release \
     && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
-    && meson setup /tmp/pgbackrest-build /tmp/pgbackrest-release \
-    && ninja -C /tmp/pgbackrest-build \
-    && cp /tmp/pgbackrest-build/src/pgbackrest /usr/bin/pgbackrest \
+    && cd /tmp/pgbackrest-release/src \
+    && ./configure \
+    && make \
+    && cp /tmp/pgbackrest-release/src/pgbackrest /usr/bin/pgbackrest \
     && groupadd --gid ${BACKREST_GID} ${BACKREST_GROUP} \
     && useradd --shell /bin/bash --uid ${BACKREST_UID} --gid ${BACKREST_GID} -m ${BACKREST_USER} \
     && wget ${BACKREST_COMPLETION_VERSION_URL}/${BACKREST_COMPLETION_VERSION}.tar.gz -O /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
@@ -79,7 +79,6 @@ RUN apk add --no-cache --update \
     && echo "${TZ}" > /etc/timezone \
     && rm -rf \
         /tmp/pgbackrest-release \
-        /tmp/pgbackrest-build \
         /tmp/pgbackrest-bash-completion \
         /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
         /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz \
