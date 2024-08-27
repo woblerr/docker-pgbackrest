@@ -253,6 +253,28 @@ docker build -f Dockerfile --build-arg BACKREST_VERSION=2.53.1 --build-arg BACKR
 docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.53.1 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.53.1-alpine .
 ```
 
+### Build pgBackRest < `v2.51`
+
+Since version `v2.51`, the build system for pgBackRest is `meson`. The `autoconf/make` build will not receive any new features and will be removed in future. If you need to build pgBackRest lower than `v2.51`, use the files [Dockerfile_make](./Dockerfile) or [Dockerfile_make.alpine](./Dockerfile_make.alpine).
+
+```bash
+make build_version TAG=2.49
+```
+
+```bash
+make build_version_alpine TAG=2.49
+```
+
+or
+
+```bash
+docker build -f Dockerfile_make --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.49 .
+```
+
+```bash
+docker build -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.49-alpine .
+```
+
 ## Build with Greenplum support
 
 PR [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833) is still not merged into pgBackRest. The separate tags `*-gpdb` are used for pgBackRest images with Greenplum support. When the PR is accepted, separate tags will no longer be needed.
