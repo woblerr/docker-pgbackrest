@@ -177,7 +177,7 @@ jobs:
       run: |
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build \
-          -f Dockerfile \
+          -f Dockerfile_make \
           --platform ${BUILD_PLATFORMS} \
           --build-arg BACKREST_VERSION=${TAG} \
           --build-arg REPO_BUILD_TAG=${REPO_TAG} \
@@ -195,7 +195,7 @@ jobs:
       run: |
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build \
-          -f Dockerfile.alpine \
+          -f Dockerfile_make.alpine \
           --platform ${BUILD_PLATFORMS} \
           --build-arg BACKREST_VERSION=${TAG} \
           --build-arg REPO_BUILD_TAG=${REPO_TAG} \
@@ -216,7 +216,7 @@ jobs:
         echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build --push \
-            -f Dockerfile \
+            -f Dockerfile_make \
             --platform ${BUILD_PLATFORMS} \
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
@@ -244,7 +244,7 @@ jobs:
         echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build --push \
-            -f Dockerfile.alpine \
+            -f Dockerfile_make.alpine \
             --platform ${BUILD_PLATFORMS} \
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
