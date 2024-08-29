@@ -9,8 +9,8 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 Supported pgBackRest version tags:
 
 * `2.53.1`, `latest`
-* `2.53-alpine`
-* `2.53`,
+* `2.53.1-alpine`
+* `2.53`
 * `2.53-alpine`
 * `2.52.1`
 * `2.52.1-alpine`
