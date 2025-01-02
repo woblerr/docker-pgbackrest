@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 ARG BACKREST_VERSION
 ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/archive/release"
@@ -42,7 +42,7 @@ RUN wget ${BACKREST_COMPLETION_VERSION_URL}/${BACKREST_COMPLETION_VERSION}.tar.g
     && tar -xzf /tmp/pgbackrest-bash-completion-${BACKREST_COMPLETION_VERSION}.tar.gz -C /tmp \
     && mv /tmp/pgbackrest-bash-completion-$(echo ${BACKREST_COMPLETION_VERSION} | tr -d v) /tmp/pgbackrest-bash-completion
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG REPO_BUILD_TAG
 
