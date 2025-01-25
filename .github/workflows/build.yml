@@ -8,7 +8,8 @@ env:
 
 jobs:
   build_image:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         pgbackrest_version: ["2.53", "2.53.1", "2.54.0", "2.54.1", "2.54.2"]
@@ -150,7 +151,8 @@ jobs:
         DOWNLOAD_URL: ${{ env.download_url }}
 
   build_gpdb_image:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata7"]
