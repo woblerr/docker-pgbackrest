@@ -8,12 +8,15 @@ env:
 
 jobs:
   build_image:
-    runs-on: ubuntu-latest
+    # Pin ubuntu-22.04.
+    # See https://github.com/actions/runner-images/issues/11471
+    # runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.52.1", "2.53", "2.53.1", "2.54.0", "2.54.1"]
+        pgbackrest_version: ["2.53", "2.53.1", "2.54.0", "2.54.1", "2.54.2"]
     env: 
-      latest_version: "2.54.1"
+      latest_version: "2.54.2"
       download_url: "https://github.com/pgbackrest/pgbackrest/archive/release"
     steps:
     - uses: actions/checkout@v4
@@ -150,7 +153,11 @@ jobs:
         DOWNLOAD_URL: ${{ env.download_url }}
 
   build_gpdb_image:
-    runs-on: ubuntu-latest
+    # Pin ubuntu-22.04.
+    # See https://github.com/actions/runner-images/issues/11471
+    # runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata7"]
