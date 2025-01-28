@@ -8,6 +8,8 @@ env:
 
 jobs:
   build_image:
+    # Pin ubuntu-22.04.
+    # See https://github.com/actions/runner-images/issues/11471
     # runs-on: ubuntu-latest
     runs-on: ubuntu-22.04
     strategy:
@@ -151,6 +153,9 @@ jobs:
         DOWNLOAD_URL: ${{ env.download_url }}
 
   build_gpdb_image:
+    # Pin ubuntu-22.04.
+    # See https://github.com/actions/runner-images/issues/11471
+    # runs-on: ubuntu-latest
     #runs-on: ubuntu-latest
     runs-on: ubuntu-22.04
     strategy:
