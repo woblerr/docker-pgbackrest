@@ -1,5 +1,5 @@
-BACKREST_VERSIONS = 2.53 2.53.1 2.54.0 2.54.1 2.54.2
-TAG?=2.54.2
+BACKREST_VERSIONS = 2.53.1 2.54.0 2.54.1 2.54.2 2.55.0
+TAG?=2.55.0
 TAG_MESON_BUILD=2.51
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
 BACKREST_GPDB_VERSIONS = 2.47_arenadata4 2.50_arenadata4 2.52_arenadata7
@@ -102,17 +102,17 @@ test-e2e-down:
 
 define run_docker_compose
 	$(call set_permissions)
-	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-${1}
+	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-${1}
 	@if [ "${1}" == "tls" ]; then \
-		TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml up -d --no-deps backup_server-${1}; \
+		TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml up -d --no-deps backup_server-${1}; \
 	fi
 	@sleep 30
-	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml run --rm --name backup-${1} --no-deps backup-${1}
-	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml run --rm --name backup_alpine-${1} --no-deps backup_alpine-${1}
+	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml run --rm --name backup-${1} --no-deps backup-${1}
+	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml run --rm --name backup_alpine-${1} --no-deps backup_alpine-${1}
 endef
 
 define down_docker_compose
-	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker-compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml down -v
+	TAG=${TAG} BACKREST_UID=$(UID) BACKREST_GID=$(GID) docker compose -f e2e_tests/docker-compose.sftp.yml -f e2e_tests/docker-compose.s3.yml -f e2e_tests/docker-compose.pg.yml -f e2e_tests/docker-compose.backup-${1}.yml down -v
 endef
 
 define set_permissions
