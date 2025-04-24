@@ -18,11 +18,16 @@ services:
     expose:
       - "2222"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - sftp-rsa
-      - sftp-ed25519
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      sftp-rsa:
+        condition: service_started
+      sftp-ed25519:
+        condition: service_started
     networks:
       - ssh
 
@@ -44,10 +49,14 @@ services:
     expose:
       - "8432"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - sftp-rsa
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      sftp-rsa:
+        condition: service_started
     networks:
       - tls
 
