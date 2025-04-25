@@ -2,8 +2,8 @@ BACKREST_VERSIONS = 2.53.1 2.54.0 2.54.1 2.54.2 2.55.0
 TAG?=2.55.0
 TAG_MESON_BUILD=2.51
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
-BACKREST_GPDB_VERSIONS = 2.47_arenadata4 2.50_arenadata4 2.52_arenadata7
-TAG_GPDB?=2.52_arenadata7
+BACKREST_GPDB_VERSIONS = 2.47_arenadata4 2.50_arenadata4 2.52_arenadata9
+TAG_GPDB?=2.52_arenadata9
 BACKREST_GPDB_DOWNLOAD_URL = https://github.com/arenadata/pgbackrest/archive
 BACKREST_COMP_VERSION?=v0.9
 UID := $(shell id -u)
@@ -69,7 +69,6 @@ build_version_gpdb_alpine:
 	$(call gpdb_image_tag_alpine,IMAGE_TAG,$(TAG_GPDB))
 	@echo "Build pgbackrest:$(IMAGE_TAG) docker image"
 	docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(BACKREST_COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) .
-	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
 .PHONY: test-e2e
