@@ -3,7 +3,7 @@ name: build
 on: [push, pull_request]
 
 env:
-  pgbackrest_completion_version: "v0.9"
+  pgbackrest_completion_version: "v0.10"
   build_platforms: "linux/amd64,linux/arm64"
 
 jobs:
