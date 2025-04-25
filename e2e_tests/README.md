@@ -34,10 +34,10 @@ or
 
 ```bash
 cd [docker-pgbackrest-root]/e2e_tests
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup-ssh --no-deps backup-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup_alpine-ssh --no-deps backup_alpine-ssh
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml down
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup-ssh --no-deps backup-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml run --rm --name backup_alpine-ssh --no-deps backup_alpine-ssh
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-ssh.yml down
 ```
 
 ### Use TLS
@@ -50,11 +50,11 @@ or
 
 ```bash
 cd [docker-pgbackrest-root]/e2e_tests
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml up -d --no-deps backup_server-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup-tls --no-deps backup-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup_alpine-tls --no-deps backup_alpine-tls
-BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker-compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml down
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml up -d --build --force-recreate --always-recreate-deps pg-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml up -d --no-deps backup_server-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup-tls --no-deps backup-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml run --rm --name backup_alpine-tls --no-deps backup_alpine-tls
+BACKREST_UID=$(id -u) BACKREST_GID=$(id -g) docker compose -f docker-compose.sftp.yml -f docker-compose.s3.yml -f docker-compose.pg.yml -f docker-compose.backup-tls.yml down
 ```
 
 ### Generate certificates and keys

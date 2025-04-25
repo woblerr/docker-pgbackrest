@@ -18,12 +18,18 @@ services:
       - "BACKREST_UID"
       - "BACKREST_GID"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - pg-ssh
-      - sftp-rsa
-      - sftp-ed25519
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      pg-ssh:
+        condition: service_started
+      sftp-rsa:
+        condition: service_started
+      sftp-ed25519:
+        condition: service_started
     networks:
       - ssh
 
@@ -44,12 +50,18 @@ services:
       - "BACKREST_UID"
       - "BACKREST_GID"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - pg-ssh
-      - sftp-rsa
-      - sftp-ed25519
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      pg-ssh:
+        condition: service_started
+      sftp-rsa:
+        condition: service_started
+      sftp-ed25519:
+        condition: service_started
     networks:
       - ssh
 

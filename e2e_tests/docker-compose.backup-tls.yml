@@ -16,10 +16,14 @@ services:
     expose:
       - "8432"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - pg-tls
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      pg-tls:
+        condition: service_started
     networks:
       - tls
 
@@ -39,12 +43,18 @@ services:
       - "BACKREST_UID"
       - "BACKREST_GID"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - pg-tls
-      - backup_server-tls
-      - sftp-rsa
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      pg-tls:
+        condition: service_started
+      backup_server-tls:
+        condition: service_started
+      sftp-rsa:
+        condition: service_started
     networks:
       - tls
 
@@ -64,12 +74,18 @@ services:
       - "BACKREST_UID"
       - "BACKREST_GID"
     depends_on:
-      - minio
-      - nginx
-      - createbucket
-      - pg-tls
-      - backup_server-tls
-      - sftp-rsa
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+      createbucket:
+        condition: service_completed_successfully
+      pg-tls:
+        condition: service_started
+      backup_server-tls:
+        condition: service_started
+      sftp-rsa:
+        condition: service_started
     networks:
       - tls
 

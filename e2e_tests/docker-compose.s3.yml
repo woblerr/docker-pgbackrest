@@ -10,13 +10,19 @@ services:
       - "MINIO_ROOT_PASSWORD"
       - "MINIO_SITE_REGION"
       - "MINIO_DOMAIN"
-    command: server /data --console-address ":9001"
+    command: server /data --console-address ":9001" --address ":9000"
     ports:
       - "9000:9000"
       - "9001:9001"
     networks:
       - ssh
       - tls
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   createbucket:
     image: minio/mc:${IMAGE_TAG_MINIO_MC}
@@ -29,20 +35,21 @@ services:
       - "S3_MINIO_HOSTNAME"
       - "S3_MINIO_BUCKET"
     depends_on:
-      - minio
-      - nginx
+      minio:
+        condition: service_healthy
+      nginx:
+        condition: service_started
     entrypoint: >
-      /bin/sh -c "
-      sleep 5;
-      mc config host add \
-        ${S3_MINIO_HOSTNAME} \
+      /bin/sh -c '
+      mc alias set \
+        "${S3_MINIO_HOSTNAME}" \
         http://minio:9000 \
-        ${MINIO_ROOT_USER} \
-        ${MINIO_ROOT_PASSWORD};
-      mc mb ${S3_MINIO_HOSTNAME}/${S3_MINIO_BUCKET};
-      mc admin user add ${S3_MINIO_HOSTNAME} ${S3_MINIO_KEY} ${S3_MINIO_KEY_SECRET};
-      mc admin policy attach ${S3_MINIO_HOSTNAME} readwrite --user ${S3_MINIO_KEY}
-      "
+        "${MINIO_ROOT_USER}" \
+        "${MINIO_ROOT_PASSWORD}";
+      mc mb "${S3_MINIO_HOSTNAME}"/"${S3_MINIO_BUCKET}";
+      mc admin user add "${S3_MINIO_HOSTNAME}" "${S3_MINIO_KEY}" "${S3_MINIO_KEY_SECRET}";
+      mc admin policy attach "${S3_MINIO_HOSTNAME}" readwrite --user="${S3_MINIO_KEY}"
+      '
     networks:
       - ssh
       - tls
