@@ -246,11 +246,11 @@ make build_version_alpine TAG=2.55.0
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.55.0 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.55.0 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.55.0 --build-arg BACKREST_COMPLETION_VERSION=v0.10 -t pgbackrest:2.55.0 .
 ```
 
 ```bash
-docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.55.0 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.55.0-alpine .
+docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.55.0 --build-arg BACKREST_COMPLETION_VERSION=v0.10 -t pgbackrest:2.55.0-alpine .
 ```
 
 ### Build pgBackRest < `v2.51`
@@ -268,11 +268,11 @@ make build_version_alpine TAG=2.49
 or
 
 ```bash
-docker build -f Dockerfile_make --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.49 .
+docker build -f Dockerfile_make --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.10 -t pgbackrest:2.49 .
 ```
 
 ```bash
-docker build -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.9 -t pgbackrest:2.49-alpine .
+docker build -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.10 -t pgbackrest:2.49-alpine .
 ```
 
 ## Build with Greenplum support

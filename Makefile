@@ -5,7 +5,7 @@ BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
 BACKREST_GPDB_VERSIONS = 2.47_arenadata4 2.50_arenadata4 2.52_arenadata9
 TAG_GPDB?=2.52_arenadata9
 BACKREST_GPDB_DOWNLOAD_URL = https://github.com/arenadata/pgbackrest/archive
-BACKREST_COMP_VERSION?=v0.9
+BACKREST_COMP_VERSION?=v0.10
 UID := $(shell id -u)
 GID := $(shell id -g)
 
