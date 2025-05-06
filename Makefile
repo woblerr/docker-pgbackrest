@@ -1,5 +1,5 @@
-BACKREST_VERSIONS = 2.53.1 2.54.0 2.54.1 2.54.2 2.55.0
-TAG?=2.55.0
+BACKREST_VERSIONS = 2.54.0 2.54.1 2.54.2 2.55.0 2.55.1
+TAG?=2.55.1
 TAG_MESON_BUILD=2.51
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
 BACKREST_GPDB_VERSIONS = 2.47_arenadata4 2.50_arenadata4 2.52_arenadata9
