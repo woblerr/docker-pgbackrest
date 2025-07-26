@@ -10,7 +10,7 @@ Supported pgBackRest version tags:
 
 * `2.56.0`, `latest`
 * `2.56.0-alpine`
-* `2.55.1`,
+* `2.55.1`
 * `2.55.1-alpine`
 * `2.55.0`
 * `2.55.0-alpine`
