@@ -24,8 +24,9 @@ $(BACKREST_VERSIONS):
 .PHONY: build_version
 build_version:
 	$(call get_completion_version,COMP_VERSION,$(TAG))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG),$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(TAG) docker image"
-	@if [ "${TAG}" \< "${TAG_MESON_BUILD}" ]; then \
+	if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG) . ; \
 	else \
 		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG) . ; \
@@ -58,8 +59,9 @@ $(addsuffix -alpine,$(BACKREST_VERSIONS)):
 .PHONY: build_version_alpine
 build_version_alpine:
 	$(call get_completion_version,COMP_VERSION,$(TAG))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG),$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(TAG)-alpine docker image"
-	@if [ "${TAG}" \< "${TAG_MESON_BUILD}" ]; then \
+	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG)-alpine . ; \
 	else \
 		docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG)-alpine . ; \
@@ -134,6 +136,25 @@ define extract_version
 	$(shell echo $(1) | cut -d_ -f1)
 endef
 
+define version_compare
+	$(shell ( \
+		v1="$(1)"; v2="$(2)"; \
+		IFS='.' read -ra V1 <<< "$$v1"; \
+		IFS='.' read -ra V2 <<< "$$v2"; \
+		max_len=$$(( $${#V1[@]} > $${#V2[@]} ? $${#V1[@]} : $${#V2[@]} )); \
+		for (( i=0; i<max_len; i++ )); do \
+			v1_part=$${V1[i]:-0}; \
+			v2_part=$${V2[i]:-0}; \
+			if [ "$$v1_part" -lt "$$v2_part" ] 2>/dev/null; then \
+				echo "true"; exit; \
+			elif [ "$$v1_part" -gt "$$v2_part" ] 2>/dev/null; then \
+				echo "false"; exit; \
+			fi; \
+		done; \
+		echo "false" \
+	))
+endef
+
 define gpdb_image_tag
 	$(eval $(1) := $(call extract_version,$(2))-gpdb)
 endef
@@ -144,8 +165,9 @@ endef
 
 define get_completion_version
 	$(eval VERSION_NUM := $(call extract_version,$(2)))
+	$(eval IS_OLD_COMP_SCRIPT := $(call version_compare,$(VERSION_NUM),$(TAG_BACKREST_OLD_COMP_VERSION)))
 	$(eval $(1) := $(shell \
-		if [ "$(VERSION_NUM)" \< "$(TAG_BACKREST_OLD_COMP_VERSION)" ]; then \
+		if [ "$(IS_OLD_COMP_SCRIPT)" = "true" ]; then \
 			echo "$(BACKREST_OLD_COMP_VERSION)"; \
 		else \
 			echo "$(BACKREST_COMP_VERSION)"; \
