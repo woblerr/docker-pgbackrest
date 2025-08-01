@@ -26,7 +26,7 @@ build_version:
 	$(call get_completion_version,COMP_VERSION,$(TAG))
 	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG),$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(TAG) docker image"
-	if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG) . ; \
 	else \
 		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG) . ; \
