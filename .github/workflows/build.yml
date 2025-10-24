@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata10"]
+        pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata12"]
     env: 
       download_url: "https://github.com/arenadata/pgbackrest/archive"
     steps:
