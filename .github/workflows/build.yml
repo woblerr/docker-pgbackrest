@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.54.1", "2.54.2", "2.55.0", "2.55.1", "2.56.0"]
+        pgbackrest_version: ["2.54.2", "2.55.0", "2.55.1", "2.56.0", "2.57.0"]
     env: 
-      latest_version: "2.56.0"
+      latest_version: "2.57.0"
       download_url: "https://github.com/pgbackrest/pgbackrest/archive/release"
     steps:
     - uses: actions/checkout@v4
@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata10"]
+        pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata12"]
     env: 
       download_url: "https://github.com/arenadata/pgbackrest/archive"
     steps:
