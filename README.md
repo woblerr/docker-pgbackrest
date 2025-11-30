@@ -21,15 +21,13 @@ Supported pgBackRest version tags:
 
 The repository also contains information for releases of pgBackRest fork with Greenplum support (see [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833)). Details - [build with Greenplum support](#build-with-greenplum-support).
 
-The repository contains information for the last 3 releases of pgBackRest fork with Greenplum support. If necessary to use an older version - do a [manual build](#build).
+The repository contains information for the last 2 releases of pgBackRest fork with Greenplum support. If necessary to use an older version - do a [manual build](#build).
 
 Supported pgBackRest version tags with Greenplum support:
+* `2.54-gpdb`
+* `2.54-gpdb-alpine`
 * `2.52-gpdb`
 * `2.52-gpdb-alpine`
-* `2.50-gpdb`
-* `2.50-gpdb-alpine`
-* `2.47-gpdb`
-* `2.47-gpdb-alpine`
 
 The image is based on the official ubuntu or alpine image. For ubuntu image each version of pgBackRest builds from the source code in a separate `builder` container. For alpine image each version of pgBackRest builds from the source code in container using virtual package `.backrest-build`.
 
@@ -310,6 +308,10 @@ docker pull ghcr.io/woblerr/pgbackrest:tag-gpdb-alpine
 ```bash
 docker run --rm  pgbackrest:2.52-gpdb pgbackrest help
 ```
+
+### Build pgBackRest < `v2.51` with Greenplum support
+
+If you need to build pgBackRest with Greenplum support lower than `v2.51`, use the files [Dockerfile_make](./Dockerfile) or [Dockerfile_make.alpine](./Dockerfile_make.alpine).
 
 ## Running tests
 

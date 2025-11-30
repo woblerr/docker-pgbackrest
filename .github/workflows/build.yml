@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.47_arenadata4", "2.50_arenadata4", "2.52_arenadata12"]
+        pgbackrest_version: ["2.52_arenadata12", "2.54_arenadata13"]
     env: 
       download_url: "https://github.com/arenadata/pgbackrest/archive"
     steps:
@@ -188,7 +188,7 @@ jobs:
       run: |
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build \
-          -f Dockerfile_make \
+          -f Dockerfile \
           --platform ${BUILD_PLATFORMS} \
           --build-arg BACKREST_VERSION=${TAG} \
           --build-arg REPO_BUILD_TAG=${REPO_TAG} \
@@ -206,7 +206,7 @@ jobs:
       run: |
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build \
-          -f Dockerfile_make.alpine \
+          -f Dockerfile.alpine \
           --platform ${BUILD_PLATFORMS} \
           --build-arg BACKREST_VERSION=${TAG} \
           --build-arg REPO_BUILD_TAG=${REPO_TAG} \
@@ -227,7 +227,7 @@ jobs:
         echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build --push \
-            -f Dockerfile_make \
+            -f Dockerfile \
             --platform ${BUILD_PLATFORMS} \
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \
@@ -255,7 +255,7 @@ jobs:
         echo ${DOCKERHUB_PKG} | docker login -u ${DOCKERHUB_USER} --password-stdin
         IMAGE_TAG="$(echo ${TAG} | cut -d_ -f1)-gpdb"
         docker buildx build --push \
-            -f Dockerfile_make.alpine \
+            -f Dockerfile.alpine \
             --platform ${BUILD_PLATFORMS} \
             --build-arg BACKREST_VERSION=${TAG} \
             --build-arg REPO_BUILD_TAG=${REPO_TAG} \

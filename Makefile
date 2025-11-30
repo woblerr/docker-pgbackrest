@@ -2,8 +2,8 @@ BACKREST_VERSIONS = 2.54.2 2.55.0 2.55.1 2.56.0 2.57.0
 TAG?=2.57.0
 TAG_MESON_BUILD=2.51
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
-BACKREST_GPDB_VERSIONS = 2.47_arenadata4 2.50_arenadata4 2.52_arenadata12
-TAG_GPDB?=2.52_arenadata12
+BACKREST_GPDB_VERSIONS = 2.52_arenadata12 2.54_arenadata13
+TAG_GPDB?=2.54_arenadata13
 BACKREST_GPDB_DOWNLOAD_URL = https://github.com/arenadata/pgbackrest/archive
 BACKREST_COMP_VERSION?=v0.11
 BACKREST_OLD_COMP_VERSION?=v0.10
@@ -37,16 +37,26 @@ build_version:
 $(BACKREST_GPDB_VERSIONS):
 	$(call gpdb_image_tag,IMAGE_TAG,$@)
 	$(call get_completion_version,COMP_VERSION,$@)
+	$(eval IS_MAKE_BUILD := $(call version_compare,$@,$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(IMAGE_TAG) docker image"
-	docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) .
+	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	else \
+		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
 .PHONY: build_version_gpdb
 build_version_gpdb:
 	$(call gpdb_image_tag,IMAGE_TAG,$(TAG_GPDB))
 	$(call get_completion_version,COMP_VERSION,$(TAG_GPDB))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG_GPDB),$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(IMAGE_TAG) docker image"
-	docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) .
+	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	else \
+		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
 .PHONY: $(BACKREST_VERSIONS)-alpine
@@ -72,16 +82,26 @@ build_version_alpine:
 $(addsuffix -alpine,$(BACKREST_GPDB_VERSIONS)):
 	$(call gpdb_image_tag_alpine,IMAGE_TAG,$@)
 	$(call get_completion_version,COMP_VERSION,$(subst -alpine,,$@))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(subst -alpine,,$@),$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(IMAGE_TAG) docker image"
-	docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) .
+	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+		docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	else \
+		docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	fi
 	docker run pgbackrest:$(shell echo $@ | cut -d_ -f1)-gpdb-alpine
 
 .PHONY: build_version_gpdb_alpine
 build_version_gpdb_alpine:
 	$(call gpdb_image_tag_alpine,IMAGE_TAG,$(TAG_GPDB))
 	$(call get_completion_version,COMP_VERSION,$(TAG_GPDB))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG_GPDB),$(TAG_MESON_BUILD)))
 	@echo "Build pgbackrest:$(IMAGE_TAG) docker image"
-	docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) .
+	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+		docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	else \
+		docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
 .PHONY: test-e2e
@@ -139,8 +159,10 @@ endef
 define version_compare
 	$(shell ( \
 		v1="$(1)"; v2="$(2)"; \
-		IFS='.' read -ra V1 <<< "$$v1"; \
-		IFS='.' read -ra V2 <<< "$$v2"; \
+		v1_clean=$$(echo "$$v1" | cut -d_ -f1); \
+		v2_clean=$$(echo "$$v2" | cut -d_ -f1); \
+		IFS='.' read -ra V1 <<< "$$v1_clean"; \
+		IFS='.' read -ra V2 <<< "$$v2_clean"; \
 		max_len=$$(( $${#V1[@]} > $${#V2[@]} ? $${#V1[@]} : $${#V2[@]} )); \
 		for (( i=0; i<max_len; i++ )); do \
 			v1_part=$${V1[i]:-0}; \
