@@ -253,7 +253,7 @@ docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.57.0 --build-ar
 
 ### Build pgBackRest < `v2.51`
 
-Since version `v2.51`, the build system for pgBackRest is `meson`. The `autoconf/make` build will not receive any new features and will be removed in future. If you need to build pgBackRest lower than `v2.51`, use the files [Dockerfile_make](./Dockerfile) or [Dockerfile_make.alpine](./Dockerfile_make.alpine).
+Since version `v2.51`, the build system for pgBackRest is `meson`. The `autoconf/make` build will not receive any new features and will be removed in future. If you need to build pgBackRest lower than `v2.51`, use the files [Dockerfile_make](./Dockerfile_make) or [Dockerfile_make.alpine](./Dockerfile_make.alpine).
 
 ```bash
 make build_version TAG=2.49
@@ -311,7 +311,7 @@ docker run --rm  pgbackrest:2.52-gpdb pgbackrest help
 
 ### Build pgBackRest < `v2.51` with Greenplum support
 
-If you need to build pgBackRest with Greenplum support lower than `v2.51`, use the files [Dockerfile_make](./Dockerfile) or [Dockerfile_make.alpine](./Dockerfile_make.alpine).
+If you need to build pgBackRest with Greenplum support lower than `v2.51`, use the files [Dockerfile_make](./Dockerfile_make) or [Dockerfile_make.alpine](./Dockerfile_make.alpine).
 
 ## Running tests
 
