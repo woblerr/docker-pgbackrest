@@ -306,7 +306,7 @@ docker pull ghcr.io/woblerr/pgbackrest:tag-gpdb-alpine
 ### Run
 
 ```bash
-docker run --rm  pgbackrest:2.52-gpdb pgbackrest help
+docker run --rm  pgbackrest:2.54-gpdb pgbackrest help
 ```
 
 ### Build pgBackRest < `v2.51` with Greenplum support
