@@ -8,7 +8,9 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 
 Supported pgBackRest version tags:
 
-* `2.58.0`, `latest`
+* `2.59.0`, `latest`
+* `2.59.0-alpine`
+* `2.58.0`
 * `2.58.0-alpine`
 * `2.57.0`
 * `2.57.0-alpine`
@@ -16,8 +18,6 @@ Supported pgBackRest version tags:
 * `2.56.0-alpine`
 * `2.55.1`
 * `2.55.1-alpine`
-* `2.55.0`
-* `2.55.0-alpine`
 
 The repository also contains information for releases of pgBackRest fork with Greenplum support (see [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833)). Details - [build with Greenplum support](#build-with-greenplum-support).
 
@@ -29,7 +29,11 @@ Supported pgBackRest version tags with Greenplum support:
 * `2.52-gpdb`
 * `2.52-gpdb-alpine`
 
-The image is based on the official ubuntu or alpine image. For ubuntu image each version of pgBackRest builds from the source code in a separate `builder` container. For alpine image each version of pgBackRest builds from the source code in container using virtual package `.backrest-build`.
+The image is based on the official ubuntu or alpine image. For ubuntu image each version of pgBackRest builds in a separate `builder` container. For alpine image each version of pgBackRest builds in container using virtual package `.backrest-build`.
+
+Starting with pgBackRest `2.59.0`, the default [Dockerfile](./Dockerfile) and [Dockerfile.alpine](./Dockerfile.alpine) build from the upstream release distribution tarball. Versions `>= 2.51` and `< 2.59.0` build from the GitHub source archive using [Dockerfile_source_archive](./Dockerfile_source_archive) or [Dockerfile_source_archive.alpine](./Dockerfile_source_archive.alpine). Older versions use the make-based Dockerfiles.
+
+Starting with pgBackRest `2.59.0`, upstream provides optional systemd notify support for `pgbackrest server` via `libsystemd`. These images intentionally do not compile pgBackRest with systemd notify support, because the documented Docker startup modes run `pgbackrest server` directly from the entrypoint instead of systemd. This does not affect regular pgBackRest commands or the Docker startup modes documented below: `BACKREST_TLS_SERVER=enable` runs `pgbackrest server` in the foreground, and `BACKREST_HOST_TYPE=tls` starts it in the background before running the requested pgBackRest command.
 
 The image contains [pgbackrest-bash-completion](https://github.com/woblerr/pgbackrest-bash-completion) script. You can complete `pgbackrest` commands by pressing tab key.
 
@@ -81,10 +85,10 @@ docker run --rm  pgbackrest:51 pgbackrest help
 ### Injecting inside
 
 ```bash
-docker run --rm -it pgbackrest:2.58.0 bash
+docker run --rm -it pgbackrest:2.59.0 bash
 
 pgbackrest@cac1f58b56f2:/$ pgbackrest version
-pgBackRest 2.58.0
+pgBackRest 2.59.0
 ```
 
 ### Example for Dedicated Repository Host
@@ -100,7 +104,7 @@ docker run --rm \
     -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.58.0 \
+    pgbackrest:2.59.0 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -127,7 +131,7 @@ docker run --rm \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /tmp/pgbackrest:/tmp/pgbackrest \
-    pgbackrest:2.58.0 \
+    pgbackrest:2.59.0 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -163,7 +167,7 @@ docker run -d \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -p 8432:8432 \
     --name backrest_server \
-    pgbackrest:2.58.0
+    pgbackrest:2.59.0
 ```
 
 ##### Run container with TLS server in background for pgBackRest execution over TLS
@@ -175,7 +179,7 @@ docker run --rm \
     -e BACKREST_HOST_TYPE=tls \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.58.0 \
+    pgbackrest:2.59.0 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -194,7 +198,7 @@ docker run --rm \
     -v /var/lib/postgresql/12/main:/var/lib/postgresql/12/main \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 \
-    pgbackrest:2.58.0 \
+    pgbackrest:2.59.0 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -214,7 +218,7 @@ docker run -d \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -p 8432:8432 \
     --name backrest_server \
-    pgbackrest:2.58.0
+    pgbackrest:2.59.0
 ```
 
 Performing a backup:
@@ -227,11 +231,33 @@ docker run --rm \
     -v /etc/pgbackrest/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf \
     -v /etc/pgbackrest/cert:/etc/pgbackrest/cert \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.58.0 \
+    pgbackrest:2.59.0 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
 ## Build
+
+```bash
+make build_version TAG=2.59.0
+```
+
+```bash
+make build_version_alpine TAG=2.59.0
+```
+
+or
+
+```bash
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.59.0 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.59.0 .
+```
+
+```bash
+docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.59.0 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.59.0-alpine .
+```
+
+### Build pgBackRest from source archive
+
+For pgBackRest versions `>= 2.51` and `< 2.59.0`, use the source archive Dockerfiles.
 
 ```bash
 make build_version TAG=2.58.0
@@ -244,11 +270,11 @@ make build_version_alpine TAG=2.58.0
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.58.0 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.58.0 .
+docker build -f Dockerfile_source_archive --build-arg BACKREST_VERSION=2.58.0 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.58.0 .
 ```
 
 ```bash
-docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.58.0 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.58.0-alpine .
+docker build -f Dockerfile_source_archive.alpine --build-arg BACKREST_VERSION=2.58.0 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.58.0-alpine .
 ```
 
 ### Build pgBackRest < `v2.51`

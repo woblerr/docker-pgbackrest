@@ -1,9 +1,12 @@
-BACKREST_VERSIONS = 2.55.0 2.55.1 2.56.0 2.57.0 2.58.0
-TAG?=2.58.0
+BACKREST_VERSIONS = 2.55.1 2.56.0 2.57.0 2.58.0 2.59.0
+TAG?=2.59.0
 TAG_MESON_BUILD=2.51
+TAG_DIST_BUILD=2.59.0
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
+BACKREST_DIST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/releases/download/release
 BACKREST_GPDB_VERSIONS = 2.52_arenadata12 2.54_arenadata14
 TAG_GPDB?=2.54_arenadata14
+# GPDB fork builds use GitHub source archives, while the default Dockerfile expects upstream distribution tarballs.
 BACKREST_GPDB_DOWNLOAD_URL = https://github.com/arenadata/pgbackrest/archive
 BACKREST_COMP_VERSION?=v0.11
 BACKREST_OLD_COMP_VERSION?=v0.10
@@ -17,20 +20,19 @@ all: $(BACKREST_VERSIONS) $(addsuffix -alpine,$(BACKREST_VERSIONS)) $(BACKREST_G
 .PHONY: $(BACKREST_VERSIONS)
 $(BACKREST_VERSIONS):
 	$(call get_completion_version,COMP_VERSION,$@)
+	$(call get_dockerfile,DOCKERFILE,$@)
+	$(call get_download_url,DOWNLOAD_URL,$@)
 	@echo "Build pgbackrest:$@ docker image"
-	docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$@ .
+	docker build --pull -f $(DOCKERFILE) --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(DOWNLOAD_URL) -t pgbackrest:$@ .
 	docker run pgbackrest:$@
 
 .PHONY: build_version
 build_version:
 	$(call get_completion_version,COMP_VERSION,$(TAG))
-	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG),$(TAG_MESON_BUILD)))
+	$(call get_dockerfile,DOCKERFILE,$(TAG))
+	$(call get_download_url,DOWNLOAD_URL,$(TAG))
 	@echo "Build pgbackrest:$(TAG) docker image"
-	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
-		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG) . ; \
-	else \
-		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG) . ; \
-	fi
+	docker build --pull -f $(DOCKERFILE) --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(DOWNLOAD_URL) -t pgbackrest:$(TAG) .
 	@docker run pgbackrest:$(TAG)
 
 .PHONY: $(BACKREST_GPDB_VERSIONS)
@@ -42,7 +44,7 @@ $(BACKREST_GPDB_VERSIONS):
 	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	else \
-		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+		docker build --pull -f Dockerfile_source_archive --build-arg BACKREST_VERSION=$@ --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
@@ -55,27 +57,26 @@ build_version_gpdb:
 	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	else \
-		docker build --pull -f Dockerfile --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+		docker build --pull -f Dockerfile_source_archive --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
 .PHONY: $(BACKREST_VERSIONS)-alpine
 $(addsuffix -alpine,$(BACKREST_VERSIONS)):
 	$(call get_completion_version,COMP_VERSION,$(subst -alpine,,$@))
+	$(call get_dockerfile_alpine,DOCKERFILE,$(subst -alpine,,$@))
+	$(call get_download_url,DOWNLOAD_URL,$(subst -alpine,,$@))
 	@echo "Build pgbackrest:$@ docker image"
-	docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$@ .
+	docker build --pull -f $(DOCKERFILE) --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(DOWNLOAD_URL) -t pgbackrest:$@ .
 	docker run pgbackrest:$@
 
 .PHONY: build_version_alpine
 build_version_alpine:
 	$(call get_completion_version,COMP_VERSION,$(TAG))
-	$(eval IS_MAKE_BUILD := $(call version_compare,$(TAG),$(TAG_MESON_BUILD)))
+	$(call get_dockerfile_alpine,DOCKERFILE,$(TAG))
+	$(call get_download_url,DOWNLOAD_URL,$(TAG))
 	@echo "Build pgbackrest:$(TAG)-alpine docker image"
-	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
-		docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG)-alpine . ; \
-	else \
-		docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_DOWNLOAD_URL) -t pgbackrest:$(TAG)-alpine . ; \
-	fi
+	docker build --pull -f $(DOCKERFILE) --build-arg BACKREST_VERSION=$(TAG) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(DOWNLOAD_URL) -t pgbackrest:$(TAG)-alpine .
 	docker run pgbackrest:$(TAG)-alpine
 
 .PHONY: $(BACKREST_GPDB_VERSIONS)-alpine
@@ -87,7 +88,7 @@ $(addsuffix -alpine,$(BACKREST_GPDB_VERSIONS)):
 	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	else \
-		docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+		docker build --pull -f Dockerfile_source_archive.alpine --build-arg BACKREST_VERSION=$(subst -alpine,,$@) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	fi
 	docker run pgbackrest:$(shell echo $@ | cut -d_ -f1)-gpdb-alpine
 
@@ -100,7 +101,7 @@ build_version_gpdb_alpine:
 	@if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
 		docker build --pull -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	else \
-		docker build --pull -f Dockerfile.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
+		docker build --pull -f Dockerfile_source_archive.alpine --build-arg BACKREST_VERSION=$(TAG_GPDB) --build-arg BACKREST_COMPLETION_VERSION=$(COMP_VERSION) --build-arg BACKREST_DOWNLOAD_URL=$(BACKREST_GPDB_DOWNLOAD_URL) -t pgbackrest:$(IMAGE_TAG) . ; \
 	fi
 	docker run pgbackrest:$(IMAGE_TAG)
 
@@ -174,6 +175,48 @@ define version_compare
 			fi; \
 		done; \
 		echo "false" \
+	))
+endef
+
+define get_dockerfile
+	$(eval VERSION_NUM := $(call extract_version,$(2)))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(VERSION_NUM),$(TAG_MESON_BUILD)))
+	$(eval IS_SOURCE_ARCHIVE_BUILD := $(call version_compare,$(VERSION_NUM),$(TAG_DIST_BUILD)))
+	$(eval $(1) := $(shell \
+		if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+			echo "Dockerfile_make"; \
+		elif [ "$(IS_SOURCE_ARCHIVE_BUILD)" = "true" ]; then \
+			echo "Dockerfile_source_archive"; \
+		else \
+			echo "Dockerfile"; \
+		fi \
+	))
+endef
+
+define get_dockerfile_alpine
+	$(eval VERSION_NUM := $(call extract_version,$(2)))
+	$(eval IS_MAKE_BUILD := $(call version_compare,$(VERSION_NUM),$(TAG_MESON_BUILD)))
+	$(eval IS_SOURCE_ARCHIVE_BUILD := $(call version_compare,$(VERSION_NUM),$(TAG_DIST_BUILD)))
+	$(eval $(1) := $(shell \
+		if [ "$(IS_MAKE_BUILD)" = "true" ]; then \
+			echo "Dockerfile_make.alpine"; \
+		elif [ "$(IS_SOURCE_ARCHIVE_BUILD)" = "true" ]; then \
+			echo "Dockerfile_source_archive.alpine"; \
+		else \
+			echo "Dockerfile.alpine"; \
+		fi \
+	))
+endef
+
+define get_download_url
+	$(eval VERSION_NUM := $(call extract_version,$(2)))
+	$(eval IS_SOURCE_ARCHIVE_BUILD := $(call version_compare,$(VERSION_NUM),$(TAG_DIST_BUILD)))
+	$(eval $(1) := $(shell \
+		if [ "$(IS_SOURCE_ARCHIVE_BUILD)" = "true" ]; then \
+			echo "$(BACKREST_DOWNLOAD_URL)"; \
+		else \
+			echo "$(BACKREST_DIST_DOWNLOAD_URL)"; \
+		fi \
 	))
 endef
 
