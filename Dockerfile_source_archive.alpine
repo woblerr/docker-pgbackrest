@@ -1,7 +1,7 @@
 FROM alpine:3.22
 
 ARG BACKREST_VERSION
-ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/releases/download/release"
+ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/archive/release"
 ARG BACKREST_COMPLETION_VERSION
 ARG BACKREST_COMPLETION_VERSION_URL="https://github.com/woblerr/pgbackrest-bash-completion/archive"
 ARG REPO_BUILD_TAG
@@ -46,7 +46,7 @@ RUN apk add --no-cache --update \
         yaml-dev \
         libssh2-dev \
     && ln -s /sbin/su-exec /usr/local/bin/gosu \
-    && wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}/pgbackrest-${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+    && wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
     && mkdir -p /tmp/pgbackrest-release /tmp/pgbackrest-build \
     && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
     && meson setup /tmp/pgbackrest-build /tmp/pgbackrest-release \

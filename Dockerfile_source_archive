@@ -1,12 +1,19 @@
 FROM ubuntu:24.04 AS builder
 
 ARG BACKREST_VERSION
-ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/releases/download/release"
+ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/archive/release"
 ARG BACKREST_COMPLETION_VERSION
 ARG BACKREST_COMPLETION_VERSION_URL="https://github.com/woblerr/pgbackrest-bash-completion/archive"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        # According to the pgBackRest docs for v2.52, the python3-distutils package is needed for build from sources.
+        # See PR https://github.com/pgbackrest/pgbackrest/pull/2338.
+        # The python3-distutils package is deprecated.
+        # For Meson on Ubuntu 22.04 and higher it makes sense to use the package python3-setuptools.
+        # See https://ubuntu.pkgs.org/22.04/ubuntu-universe-amd64/meson_0.61.2-1_all.deb.html
+        # and https://ubuntu.pkgs.org/24.04/ubuntu-universe-amd64/meson_1.3.2-1ubuntu1_all.deb.html
+        # python3-distutils \
         python3-setuptools \
         gcc \
         meson \
@@ -25,7 +32,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}/pgbackrest-${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
+RUN wget ${BACKREST_DOWNLOAD_URL}/${BACKREST_VERSION}.tar.gz -O /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz \
     && mkdir -p /tmp/pgbackrest-release /tmp/pgbackrest-build \
     && tar -xzf /tmp/pgbackrest-${BACKREST_VERSION}.tar.gz --strip-components=1 -C /tmp/pgbackrest-release \
     && meson setup /tmp/pgbackrest-build /tmp/pgbackrest-release \
