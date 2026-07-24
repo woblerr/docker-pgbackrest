@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine:3.23
 
 ARG BACKREST_VERSION
 ARG BACKREST_DOWNLOAD_URL="https://github.com/pgbackrest/pgbackrest/releases/download/release"
