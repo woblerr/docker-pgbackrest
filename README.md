@@ -8,7 +8,9 @@ The repository contains information for the last 5 releases of pgBackRest. If ne
 
 Supported pgBackRest version tags:
 
-* `2.59.1`, `latest`
+* `2.59.2`, `latest`
+* `2.59.2-alpine`
+* `2.59.1`
 * `2.59.1-alpine`
 * `2.59.0`
 * `2.59.0-alpine`
@@ -16,8 +18,6 @@ Supported pgBackRest version tags:
 * `2.58.0-alpine`
 * `2.57.0`
 * `2.57.0-alpine`
-* `2.56.0`
-* `2.56.0-alpine`
 
 The repository also contains information for releases of pgBackRest fork with Greenplum support (see [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833)). Details - [build with Greenplum support](#build-with-greenplum-support).
 
@@ -85,10 +85,10 @@ docker run --rm  pgbackrest:51 pgbackrest help
 ### Injecting inside
 
 ```bash
-docker run --rm -it pgbackrest:2.59.1 bash
+docker run --rm -it pgbackrest:2.59.2 bash
 
 pgbackrest@cac1f58b56f2:/$ pgbackrest version
-pgBackRest 2.59.1
+pgBackRest 2.59.2
 ```
 
 ### Example for Dedicated Repository Host
@@ -104,7 +104,7 @@ docker run --rm \
     -v ~/.ssh/id_rsa:/home/pgbackrest/.ssh/id_rsa \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.59.1 \
+    pgbackrest:2.59.2 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -131,7 +131,7 @@ docker run --rm \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /tmp/pgbackrest:/tmp/pgbackrest \
-    pgbackrest:2.59.1 \
+    pgbackrest:2.59.2 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -167,7 +167,7 @@ docker run -d \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -p 8432:8432 \
     --name backrest_server \
-    pgbackrest:2.59.1
+    pgbackrest:2.59.2
 ```
 
 ##### Run container with TLS server in background for pgBackRest execution over TLS
@@ -179,7 +179,7 @@ docker run --rm \
     -e BACKREST_HOST_TYPE=tls \
     -v /etc/pgbackrest:/etc/pgbackrest \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.59.1 \
+    pgbackrest:2.59.2 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -198,7 +198,7 @@ docker run --rm \
     -v /var/lib/postgresql/12/main:/var/lib/postgresql/12/main \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 \
-    pgbackrest:2.59.1 \
+    pgbackrest:2.59.2 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
@@ -218,7 +218,7 @@ docker run -d \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
     -p 8432:8432 \
     --name backrest_server \
-    pgbackrest:2.59.1
+    pgbackrest:2.59.2
 ```
 
 Performing a backup:
@@ -231,28 +231,28 @@ docker run --rm \
     -v /etc/pgbackrest/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf \
     -v /etc/pgbackrest/cert:/etc/pgbackrest/cert \
     -v /var/lib/pgbackrest:/var/lib/pgbackrest \
-    pgbackrest:2.59.1 \
+    pgbackrest:2.59.2 \
     pgbackrest backup --stanza demo --type full --log-level-console info
 ```
 
 ## Build
 
 ```bash
-make build_version TAG=2.59.1
+make build_version TAG=2.59.2
 ```
 
 ```bash
-make build_version_alpine TAG=2.59.1
+make build_version_alpine TAG=2.59.2
 ```
 
 or
 
 ```bash
-docker build -f Dockerfile --build-arg BACKREST_VERSION=2.59.1 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.59.1 .
+docker build -f Dockerfile --build-arg BACKREST_VERSION=2.59.2 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.59.2 .
 ```
 
 ```bash
-docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.59.1 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.59.1-alpine .
+docker build -f Dockerfile.alpine --build-arg BACKREST_VERSION=2.59.2 --build-arg BACKREST_COMPLETION_VERSION=v0.11 -t pgbackrest:2.59.2-alpine .
 ```
 
 ### Build pgBackRest from source archive
