@@ -4,8 +4,8 @@ TAG_MESON_BUILD=2.51
 TAG_DIST_BUILD=2.59.0
 BACKREST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/archive/release
 BACKREST_DIST_DOWNLOAD_URL = https://github.com/pgbackrest/pgbackrest/releases/download/release
-BACKREST_GPDB_VERSIONS = 2.52_arenadata12 2.54_arenadata14
-TAG_GPDB?=2.54_arenadata14
+BACKREST_GPDB_VERSIONS = 2.52_arenadata12 2.54_arenadata15
+TAG_GPDB?=2.54_arenadata15
 # GPDB fork builds use GitHub source archives, while the default Dockerfile expects upstream distribution tarballs.
 BACKREST_GPDB_DOWNLOAD_URL = https://github.com/arenadata/pgbackrest/archive
 BACKREST_COMP_VERSION?=v0.11
