@@ -192,7 +192,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.52_arenadata12", "2.54_arenadata14"]
+        pgbackrest_version: ["2.52_arenadata12", "2.54_arenadata15"]
     env: 
       download_url: "https://github.com/arenadata/pgbackrest/archive"
     steps:
