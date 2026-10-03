@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.56.0", "2.57.0", "2.58.0", "2.59.0", "2.59.1"]
+        pgbackrest_version: ["2.57.0", "2.58.0", "2.59.0", "2.59.1", "2.59.2"]
     env: 
-      latest_version: "2.59.1"
+      latest_version: "2.59.2"
       dist_build_version: "2.59.0"
       source_archive_download_url: "https://github.com/pgbackrest/pgbackrest/archive/release"
       dist_download_url: "https://github.com/pgbackrest/pgbackrest/releases/download/release"
